@@ -131,11 +131,26 @@ class VerdictsTest(unittest.TestCase):
         self.assertNotIn("Кэшбэк", content)
         self.assertNotIn("[c1]", content)
 
+    def test_summary_contradicting_table_is_caught(self):
+        # резюме модели с итогового прогона (review/results_final_llm.json, коммит e78fec6)
+        q4 = "100 дней подходит для снятия наличных с льготным периодом, другие карты не подходят. Оговорка: у 100 дней есть комиссия."
+        self.assertEqual(summary_violations(q4, self.table(Q4)),
+                         ["не назван продукт с выводом «только в пределах лимита»: «Опорная 55»"])
+        q5 = "Кедр Рассрочка и Рассрочка по кнопке не начисляют проценты, но имеют другие последствия."
+        self.assertTrue(any("Рассрочка по кнопке" in v for v in summary_violations(q5, self.table(Q5))))
+
+    def test_code_summary_passes_own_check(self):
+        for q in (Q4, Q5, Q9):
+            t = self.table(q)
+            self.assertEqual(summary_violations(t.summary(), t), [], q)
+
     def test_summary_violations(self):
         t = self.table(Q4)
         self.assertEqual(summary_violations("«100 дней» сохраняет, но комиссия 3,9% + 390 ₽; «Опорная 55» — до 50 000 ₽.", t), [])
         bad = summary_violations("Сохраняют «100 дней» и «Плати частями», ставка до 59,8%.", t)
-        self.assertEqual(len(bad), 2)
+        self.assertIn("продукт не из таблицы: плати частями", bad)
+        self.assertIn("число не из таблицы: 59,8", bad)
+        self.assertIn("не назван продукт с выводом «только в пределах лимита»: «Опорная 55»", bad)
 
 
 class ListAnswerTest(unittest.TestCase):

@@ -168,6 +168,39 @@ def summary_violations(summary: str, verdicts) -> list[str]:
         num = re.sub(r"\s", "", m).rstrip(".,")
         if num and num not in table:
             problems.append(f"число не из таблицы: {num}")
+    problems += _polarity_violations(summary, verdicts)
+    return problems
+
+
+NEGATION_RE = re.compile(r"(?<![а-яё])(не|нет)(?![а-яё])", re.IGNORECASE)
+CLAUSE_SPLIT_RE = re.compile(r"[.;!?\n]|,\s*(?=(?:а|но|другие|остальные)\s)|\s—\s")
+
+
+def _polarity_violations(summary: str, verdicts) -> list[str]:
+    """Резюме не должно противоречить выводам таблицы (найдено на итоговом прогоне:
+    «Рассрочка по кнопке не начисляет проценты» при выводе «да»; «другие карты не
+    подходят» без «Опорной 55», у которой «только в пределах лимита»).
+
+    Эвристика по частям фраз: продукт в части с «не»/«нет» при положительном выводе
+    (или без отрицания при выводе «нет…») — противоречие; продукт с выводом «да» или
+    «только …», не названный в резюме, — пропуск. «Нет данных» не проверяется.
+    """
+    aliases = _catalog_aliases()
+    positive = {r.product_id: r for r in verdicts.rows if r.verdict.startswith(("да", "только"))}
+    negative = {r.product_id: r for r in verdicts.rows if r.verdict.startswith("нет") and r.verdict != "нет данных"}
+    problems, named = [], set()
+    for part in CLAUSE_SPLIT_RE.split(summary):
+        neg = bool(NEGATION_RE.search(part))
+        for pid in positive.keys() | negative.keys():
+            if pid not in aliases or not _mentioned(part, aliases[pid]):
+                continue
+            named.add(pid)
+            if neg and pid in positive:
+                problems.append(f"противоречит таблице: «{positive[pid].product}» — {positive[pid].verdict}")
+            elif not neg and pid in negative:
+                problems.append(f"противоречит таблице: «{negative[pid].product}» — {negative[pid].verdict}")
+    problems += [f"не назван продукт с выводом «{r.verdict}»: «{r.product}»" for pid, r in positive.items()
+                 if pid not in named]
     return problems
 
 

@@ -112,6 +112,9 @@ def check(q: dict, resp) -> dict:
         parts["text"].append(f"нет источников: {lost}")
     if q.get("sources_any") and not files & set(q["sources_any"]):
         parts["text"].append(f"нет ни одного из источников {q['sources_any']}")
+    rejected = [n for n in resp.notes if n.startswith("резюме модели отброшено")]
+    if rejected:  # пользователь получил верную таблицу и резюме из кода, но текст модели не прошёл
+        parts["text"].append(rejected[0])
     hits = forbidden_hits(model_text, q.get("forbidden", []))
     if hits:
         parts["text"].append(f"запрещённое утверждение: {hits}")

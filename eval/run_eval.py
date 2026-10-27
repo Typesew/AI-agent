@@ -76,7 +76,7 @@ def forbidden_hits(text: str, forbidden: list) -> list[str]:
     return hits
 
 
-def check(q: dict, resp) -> dict:
+def check(q: dict, resp, offline: bool = False) -> dict:
     tool_json = json.dumps([c.get("result") for c in resp.tool_calls], ensure_ascii=False)
     # Текст модели: для вопроса-списка это резюме под таблицей, иначе весь ответ.
     model_text = resp.answer
@@ -113,7 +113,8 @@ def check(q: dict, resp) -> dict:
     if q.get("sources_any") and not files & set(q["sources_any"]):
         parts["text"].append(f"нет ни одного из источников {q['sources_any']}")
     rejected = [n for n in resp.notes if n.startswith("резюме модели отброшено")]
-    if rejected:  # пользователь получил верную таблицу и резюме из кода, но текст модели не прошёл
+    if rejected and not offline:  # пользователь получил таблицу и резюме из кода, но текст модели не прошёл
+        # (офлайн «модель» — заглушка, отдающая весь контекст: её «резюме» проверять бессмысленно)
         parts["text"].append(rejected[0])
     hits = forbidden_hits(model_text, q.get("forbidden", []))
     if hits:
@@ -183,7 +184,7 @@ def main():
                 offline.router_answer = q["router"]
             started = time.time()
             resp = agent.ask(q["question"], use_graph=not args.no_graph)
-            r = check(q, resp)
+            r = check(q, resp, offline=offline is not None)
             r["seconds"] = round(time.time() - started, 1)
             results.append(r)
             mark = "OK  " if r["passed"] else "FAIL"

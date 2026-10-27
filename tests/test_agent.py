@@ -120,7 +120,7 @@ class AgentEndToEndTest(unittest.TestCase):
             q = questions[qid]
             self.llm.router_answer = q["router"]
             with self.subTest(id=qid, q=q["question"]):
-                result = check(q, self.agent.ask(q["question"]))
+                result = check(q, self.agent.ask(q["question"]), offline=True)
                 self.assertTrue(result["passed"], result["problems"])
 
     def test_sources_block_rendered_once(self):

@@ -69,7 +69,9 @@ class CorpusTest(unittest.TestCase):
         # Шаблон собран из кусков, чтобы этот файл сам не находился поиском.
         old = ["пол" + "ярн", "сир" + "ень", "каш" + "тан", "pol" + "ar", "sir" + "en", "kash" + "tan"]
         pattern = re.compile("|".join(old), re.IGNORECASE)
-        allowed = re.compile("пол" + "ярная 120", re.IGNORECASE)
+        # То же правило, что у команды grep в README: строка допустима, если в ней есть «Полярная 120»
+        # (продукт банка «Северный Путь») или её сокращение в ответах модели — но не «… 100».
+        allowed = re.compile("пол" + r"ярн(?:ая|ой|ую)(?: 1[^0]| 120|[^ 0-9]|$)", re.IGNORECASE)
         hits = []
         for path, text in repo_text_files():
             for line in text.splitlines():

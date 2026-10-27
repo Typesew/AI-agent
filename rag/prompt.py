@@ -168,7 +168,7 @@ def summary_violations(summary: str, verdicts) -> list[str]:
         num = re.sub(r"\s", "", m).rstrip(".,")
         if num and num not in table:
             problems.append(f"число не из таблицы: {num}")
-    problems += _polarity_violations(summary, verdicts)
+    problems += _contradiction_violations(summary, verdicts)
     return problems
 
 
@@ -176,7 +176,7 @@ NEGATION_RE = re.compile(r"(?<![а-яё])(не|нет)(?![а-яё])", re.IGNOREC
 CLAUSE_SPLIT_RE = re.compile(r"[.;!?\n]|,\s*(?=(?:а|но|другие|остальные)\s)|\s—\s")
 
 
-def _polarity_violations(summary: str, verdicts) -> list[str]:
+def _contradiction_violations(summary: str, verdicts) -> list[str]:
     """Резюме не должно противоречить выводам таблицы (найдено на итоговом прогоне:
     «Рассрочка по кнопке не начисляет проценты» при выводе «да»; «другие карты не
     подходят» без «Опорной 55», у которой «только в пределах лимита»).

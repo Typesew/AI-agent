@@ -1,0 +1,70 @@
+# Свободные формулировки.
+doc_id: kedr_credit
+bank_id: bank_kedr
+bank: Банк «Кедр»
+product: Кедр 78
+product_term: term_credit_card
+doc_type: credit_card
+date: 2026-07-20
+aliases: [кедр 78]
+tool_params: {grace_days: 78, grace_mode: from_purchase}
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Потратить можно до 1 000 000 ₽ — это максимальный кредитный лимит."
+        node: {label: Condition, id: kedr_credit_limit, name: "Кредитный лимит", value: "до 1 000 000 ₽", term: term_credit_limit}
+      - id: "1.2"
+        text: "Ставка — от 29,9% до 59,9% годовых, ПСК — от 29,095% до 59,895%."
+        nodes:
+          - {label: Condition, id: kedr_credit_rate, name: "Процентная ставка", value: "29,9–59,9% годовых", term: term_rate}
+          - {label: Condition, id: kedr_credit_psk, name: "ПСК", value: "29,095–59,895% годовых", term: term_psk}
+      - id: "1.3"
+        text: "Платить за обслуживание не придётся весь срок — 0 ₽."
+        node: {label: Fee, id: kedr_credit_service, name: "Обслуживание карты", value: "0 ₽ на весь срок", term: term_service_fee}
+  - number: 2
+    title: Льготный период
+    clauses:
+      - id: "2.1"
+        text: "На покупки действует до 78 дней без процентов."
+        node: {label: Condition, id: kedr_credit_grace, name: "Льготный период", value: "до 78 дней на покупки", term: term_grace}
+      - id: "2.2"
+        text: "Снятие наличных и переводы в льготный период не входят."
+        nodes:
+          - {label: Exception, id: kedr_credit_grace_x_cash, name: "Снятие наличных", of: kedr_credit_grace, event: ev_cash}
+          - {label: Exception, id: kedr_credit_grace_x_transfer, name: "Переводы", of: kedr_credit_grace, event: ev_transfer}
+      - id: "2.3"
+        text: "Не успели вернуть весь долг к концу льготного периода — проценты начислят с даты покупки."
+      - id: "2.4"
+        text: "Пропустили минимальный платёж — льготного периода больше нет."
+  - number: 3
+    title: Обслуживание и комиссии
+    clauses:
+      - id: "3.1"
+        text: "За снятие наличных и переводы — 4,9% + 390 ₽, а проценты капают сразу с даты операции."
+        nodes:
+          - {label: Fee, id: kedr_credit_cash_fee, name: "Комиссия за снятие наличных", value: "4,9% + 390 ₽, проценты с даты операции", term: term_cash_withdrawal}
+          - {label: Fee, id: kedr_credit_transfer_fee, name: "Комиссия за перевод с карты", value: "4,9% + 390 ₽, проценты с даты операции", term: term_cc_transfer}
+  - number: 4
+    title: Кэшбэк и бонусы
+    clauses:
+      - id: "4.1"
+        text: "Программу лояльности выбираете сами: кэшбэк до 25% в выбранных категориях или товары за 1 ₽ у партнёра."
+        node: {label: Condition, id: kedr_credit_cashback, name: "Кэшбэк", value: "до 25% в выбранных категориях или товары за 1 ₽ у партнёра", term: term_cashback}
+  - number: 5
+    title: Минимальный платёж и ответственность
+    clauses:
+      - id: "5.1"
+        text: "Каждый месяц нужно вносить минимум 4% от задолженности."
+        node: {label: Condition, id: kedr_credit_minpay, name: "Минимальный платёж", value: "4% от задолженности", term: term_minpay}
+      - id: "5.2"
+        text: "Опоздали с платежом — неустойка 0,1% в день."
+        node: {label: Fee, id: kedr_credit_penalty, name: "Неустойка за просрочку", value: "0,1% в день", term: term_penalty}
+events:
+  - {rel: CANCELS, event: ev_not_full_repay, target: kedr_credit_grace, section: "2.3"}
+  - {rel: TRIGGERS, event: ev_not_full_repay, target: kedr_credit_rate, section: "2.3"}
+  - {rel: CANCELS, event: ev_missed_payment, target: kedr_credit_grace, section: "2.4"}
+  - {rel: TRIGGERS, event: ev_cash, target: kedr_credit_cash_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_transfer, target: kedr_credit_transfer_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: kedr_credit_penalty, section: "5.2"}

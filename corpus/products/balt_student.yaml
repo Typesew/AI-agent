@@ -1,0 +1,38 @@
+doc_id: balt_student
+bank_id: bank_balt
+bank: Банк «Балтийский»
+product: Студенческая Балтийская
+product_term: term_student_card
+doc_type: student_card
+date: 2026-09-15
+aliases: [студенческая балтийская]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Обслуживание — 0 ₽."
+        node: {label: Fee, id: balt_student_service, name: "Обслуживание карты", value: "0 ₽", term: term_service_fee}
+      - id: "1.2"
+        text: "Скидка на проезд в метро по городскому проекту."
+        node: {label: Condition, id: balt_student_metro, name: "Скидка на метро", value: "по городскому проекту"}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "Кэшбэк — 1,5% бонусами «ЯРКО»."
+        node: {label: Condition, id: balt_student_cashback, name: "Кэшбэк", value: "1,5% бонусами «ЯРКО»", term: term_cashback}
+      - id: "3.2"
+        text: "Процент на остаток — до 15% годовых."
+        node: {label: Condition, id: balt_student_balance, name: "Процент на остаток", value: "до 15% годовых", term: term_balance_interest}
+  - number: 4
+    title: Статус и возраст
+    clauses:
+      - id: "4.1"
+        text: "Карта для студентов до 25 лет."
+        node: {label: Condition, id: balt_student_age, name: "Возрастной предел", value: "до 25 лет", term: term_student_card}
+      - id: "4.2"
+        text: "При потере студенческого статуса или в 25 лет карта переводится на «Яркая Карта» с её условиями: 149 ₽ в месяц, если условия не выполнены."
+        node: {label: Condition, id: balt_student_convert, name: "Перевод на «Яркая Карта»", value: "149 ₽ в месяц, если условия «Яркая Карта» не выполнены", term: term_service_fee}
+events:
+  - {rel: TRIGGERS, event: ev_student_lost, target: balt_student_convert, section: "4.2"}

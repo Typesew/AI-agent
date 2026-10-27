@@ -1,0 +1,43 @@
+# Свободные формулировки.
+doc_id: kedr_student
+bank_id: bank_kedr
+bank: Банк «Кедр»
+product: Студенческая Кедр
+product_term: term_student_card
+doc_type: student_card
+date: 2026-07-20
+aliases: [студенческая кедр]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Карта бесплатная: 0 ₽ за обслуживание."
+        node: {label: Fee, id: kedr_student_service, name: "Обслуживание карты", value: "0 ₽", term: term_service_fee}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "Переводы через СБП ничего не стоят."
+        node: {label: Condition, id: kedr_student_sbp, name: "Переводы по СБП", value: "бесплатно", term: term_sbp}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "С каждой покупки возвращается 1%, а в 4 категориях — до 25%."
+        node: {label: Condition, id: kedr_student_cashback, name: "Кэшбэк", value: "1% на всё + до 25% в 4 категориях", term: term_cashback}
+      - id: "3.2"
+        text: "Товары с зелёным ценником у партнёра обойдутся со скидкой до 30%."
+        node: {label: Condition, id: kedr_student_discount, name: "Скидка у партнёра", value: "до 30% на товары с зелёным ценником", term: term_loyalty}
+  - number: 4
+    title: Статус и возраст
+    clauses:
+      - id: "4.1"
+        text: "Карта для студентов младше 25 лет."
+        node: {label: Condition, id: kedr_student_age, name: "Возрастной предел", value: "до 25 лет", term: term_student_card}
+      - id: "4.2"
+        text: "Как только статус студента потерян или исполнилось 25, карта становится «Кедр Картой»: обслуживание остаётся 0 ₽, а вот скидка у партнёра исчезает."
+        node: {label: Condition, id: kedr_student_convert, name: "Перевод на «Кедр Карта»", value: "обслуживание 0 ₽, скидка у партнёра пропадает", term: term_service_fee}
+events:
+  - {rel: TRIGGERS, event: ev_student_lost, target: kedr_student_convert, section: "4.2"}
+  - {rel: CANCELS, event: ev_student_lost, target: kedr_student_discount, section: "4.2"}

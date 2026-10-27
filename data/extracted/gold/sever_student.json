@@ -1,0 +1,120 @@
+{
+ "nodes": [
+  {
+   "id": "sever_student_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "sever_student_stipend",
+   "label": "Condition",
+   "name": "Получение стипендии",
+   "value": "без комиссии",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "sever_student_transfer_limit",
+   "label": "Condition",
+   "name": "Бесплатные переводы",
+   "value": "внутри банка до 300 000 ₽ в месяц",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "sever_student_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "бонусы «Спасибо», 5 категорий для молодёжи",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "sever_student_age",
+   "label": "Condition",
+   "name": "Возрастной предел",
+   "value": "до 23 лет",
+   "aliases": "",
+   "section": "4.1"
+  },
+  {
+   "id": "sever_student_convert",
+   "label": "Condition",
+   "name": "Перевод на «Северную Карту»",
+   "value": "обслуживание остаётся 0 ₽, категорий кэшбэка 3 вместо 5",
+   "aliases": "",
+   "section": "4.2"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "sever_student",
+   "sever_student_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_student_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_student",
+   "sever_student_stipend",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_student",
+   "sever_student_transfer_limit",
+   "2.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_student",
+   "sever_student_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_student_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_student",
+   "sever_student_age",
+   "4.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_student_age",
+   "term_student_card",
+   "4.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_student",
+   "sever_student_convert",
+   "4.2"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_student_convert",
+   "term_service_fee",
+   "4.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_student_lost",
+   "sever_student_convert",
+   "4.2"
+  ]
+ ]
+}

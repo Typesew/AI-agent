@@ -1,0 +1,51 @@
+doc_id: merid_install
+bank_id: bank_merid
+bank: Банк «Меридиан»
+product: Меридиан Частями
+product_term: term_installment
+doc_type: installment
+date: 2026-10-01
+aliases: [меридиан частями]
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Срок рассрочки — 3, 6 или 12 месяцев, зависит от магазина-партнёра."
+        node: {label: Condition, id: merid_install_term, name: "Срок рассрочки", value: "3, 6 или 12 месяцев в зависимости от магазина"}
+      - id: "1.2"
+        text: "Переплата — 0% при соблюдении графика платежей."
+        node: {label: Condition, id: merid_install_zero, name: "Рассрочка без переплаты", value: "0% при соблюдении графика", term: term_installment}
+      - id: "1.3"
+        text: "Оплата только в терминалах партнёров; снять наличные нельзя."
+        node: {label: Condition, id: merid_install_partners, name: "Где работает", value: "только терминалы партнёров, без снятия наличных", term: term_bnpl}
+  - number: 2
+    title: Комиссии
+    clauses:
+      - id: "2.1"
+        text: "Автоматически подключается СМС-информирование — 59 ₽ в месяц."
+        node: {label: Fee, id: merid_install_sms, name: "СМС-информирование", value: "59 ₽ в месяц, подключается автоматически", term: term_service_fee}
+  - number: 3
+    title: Просрочка
+    clauses:
+      - id: "3.1"
+        text: "При просрочке рассрочка превращается в кредит: на остаток начисляется 34,9% годовых."
+        node: {label: Condition, id: merid_install_after, name: "Кредит после просрочки", value: "34,9% годовых на остаток", term: term_rate}
+      - id: "3.2"
+        text: "За просрочку также взимаются штраф 590 ₽ и неустойка 0,1% в день."
+        nodes:
+          - {label: Fee, id: merid_install_fine, name: "Штраф за пропуск платежа", value: "590 ₽", term: term_fine}
+          - {label: Fee, id: merid_install_penalty, name: "Неустойка за просрочку", value: "0,1% в день", term: term_penalty}
+      - id: "3.3"
+        text: "При пропуске двух платежей подряд банк вправе потребовать досрочного погашения, а отметка о просрочке передаётся в бюро кредитных историй."
+        nodes:
+          - {label: Condition, id: merid_install_early, name: "Требование досрочного погашения", value: "банк вправе потребовать вернуть всю сумму", term: term_early}
+          - {label: Condition, id: merid_install_bki, name: "Отметка в кредитной истории", value: "просрочка передаётся в бюро кредитных историй", term: term_credit_history}
+events:
+  - {rel: TRIGGERS, event: ev_paid_service, target: merid_install_sms, section: "2.1"}
+  - {rel: CANCELS, event: ev_missed_payment, target: merid_install_zero, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: merid_install_after, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: merid_install_fine, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: merid_install_penalty, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: merid_install_early, section: "3.3"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: merid_install_bki, section: "3.3"}

@@ -1,0 +1,152 @@
+{
+ "nodes": [
+  {
+   "id": "opora_student_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽ без условий",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "opora_student_topup",
+   "label": "Condition",
+   "name": "Пополнение",
+   "value": "бесплатно через СБП и банкоматы",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "opora_student_cash",
+   "label": "Condition",
+   "name": "Снятие наличных",
+   "value": "до 500 000 ₽ в месяц в банкоматах банка, 3 000–100 000 ₽ в любых",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "opora_student_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "до 15% в 4 категориях + 1% на всё",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "opora_student_cb_limit",
+   "label": "Condition",
+   "name": "Лимит кэшбэка",
+   "value": "5 000 ₽ в месяц с Pro, 3 000 ₽ без подписки",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "opora_student_age",
+   "label": "Condition",
+   "name": "Возраст",
+   "value": "14–22 года",
+   "aliases": "",
+   "section": "4.1"
+  },
+  {
+   "id": "opora_student_convert",
+   "label": "Condition",
+   "name": "Перевод на «Опорная Black»",
+   "value": "обслуживание 99 ₽ в месяц, если условия «Опорная Black» не выполнены",
+   "aliases": "",
+   "section": "4.2"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "opora_student",
+   "opora_student_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_student_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_student",
+   "opora_student_topup",
+   "1.2"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_student_topup",
+   "term_sbp",
+   "1.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_student",
+   "opora_student_cash",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_student_cash",
+   "term_cash_withdrawal",
+   "2.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_student",
+   "opora_student_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_student_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_student",
+   "opora_student_cb_limit",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_student_cb_limit",
+   "term_cashback_limit",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_student",
+   "opora_student_age",
+   "4.1"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_student_age",
+   "term_student_card",
+   "4.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_student",
+   "opora_student_convert",
+   "4.2"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_student_convert",
+   "term_service_fee",
+   "4.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_student_lost",
+   "opora_student_convert",
+   "4.2"
+  ]
+ ]
+}

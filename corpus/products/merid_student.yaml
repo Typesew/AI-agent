@@ -1,0 +1,41 @@
+doc_id: merid_student
+bank_id: bank_merid
+bank: Банк «Меридиан»
+product: Студенческая Меридиан
+product_term: term_student_card
+doc_type: student_card
+date: 2026-10-01
+aliases: [студенческая меридиан]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Обслуживание — 0 ₽."
+        node: {label: Fee, id: merid_student_service, name: "Обслуживание карты", value: "0 ₽", term: term_service_fee}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "Снятие наличных без комиссии в партнёрской сети банкоматов."
+        node: {label: Condition, id: merid_student_cash, name: "Снятие наличных", value: "без комиссии в партнёрской сети", term: term_cash_withdrawal}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "Кэшбэк — до 5% в выбранных категориях и 1% на всё."
+        node: {label: Condition, id: merid_student_cashback, name: "Кэшбэк", value: "до 5% в категориях, 1% на всё", term: term_cashback}
+      - id: "3.2"
+        text: "Процент на остаток — до 8% годовых на сумму до 100 000 ₽."
+        node: {label: Condition, id: merid_student_balance, name: "Процент на остаток", value: "до 8% годовых на остаток до 100 000 ₽", term: term_balance_interest}
+  - number: 4
+    title: Статус и возраст
+    clauses:
+      - id: "4.1"
+        text: "Карта выдаётся студентам до 24 лет."
+        node: {label: Condition, id: merid_student_age, name: "Возрастной предел", value: "до 24 лет", term: term_student_card}
+      - id: "4.2"
+        text: "При потере студенческого статуса или в 24 года карта переводится на «Меридиан Карта»: обслуживание 0 ₽, процент на остаток начисляется на сумму до 300 000 ₽."
+        node: {label: Condition, id: merid_student_convert, name: "Перевод на «Меридиан Карта»", value: "обслуживание 0 ₽, процент на остаток на сумму до 300 000 ₽", term: term_service_fee}
+events:
+  - {rel: TRIGGERS, event: ev_student_lost, target: merid_student_convert, section: "4.2"}

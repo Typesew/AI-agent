@@ -1,0 +1,67 @@
+doc_id: balt_credit
+bank_id: bank_balt
+bank: Банк «Балтийский»
+product: 100 дней
+product_term: term_credit_card
+doc_type: credit_card
+date: 2026-09-15
+aliases: ["100 дней"]
+# «за 100 дней» не должно срабатывать как продукт без контекста карты или банка
+require_context: ["карт*", "кредитк*", "балтийск*"]
+tool_params: {grace_days: 100, grace_mode: from_purchase}
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Кредитный лимит — до 2 000 000 ₽."
+        node: {label: Condition, id: balt_credit_limit, name: "Кредитный лимит", value: "до 2 000 000 ₽", term: term_credit_limit}
+      - id: "1.2"
+        text: "Процентная ставка — от 49,9% до 59,9% годовых; ПСК — от 50,820% до 60,996% годовых."
+        nodes:
+          - {label: Condition, id: balt_credit_rate, name: "Процентная ставка", value: "49,9–59,9% годовых", term: term_rate}
+          - {label: Condition, id: balt_credit_psk, name: "ПСК", value: "50,820–60,996% годовых", term: term_psk}
+      - id: "1.3"
+        text: "Обслуживание карты — 0 ₽ навсегда."
+        node: {label: Fee, id: balt_credit_service, name: "Обслуживание карты", value: "0 ₽ навсегда", term: term_service_fee}
+  - number: 2
+    title: Льготный период
+    clauses:
+      - id: "2.1"
+        text: "Льготный период — до 100 дней на покупки, переводы и снятие наличных."
+        node: {label: Condition, id: balt_credit_grace, name: "Льготный период", value: "до 100 дней на покупки, переводы и снятие наличных (без исключений)", term: term_grace}
+      - id: "2.2"
+        text: "Если к концу льготного периода долг погашен не полностью, проценты начисляются с даты покупки."
+  - number: 3
+    title: Обслуживание и комиссии
+    clauses:
+      - id: "3.1"
+        text: "Снятие наличных и переводы — комиссия 3,9% + 390 ₽; проценты в течение льготного периода не начисляются."
+        nodes:
+          - {label: Fee, id: balt_credit_cash_fee, name: "Комиссия за снятие наличных", value: "3,9% + 390 ₽, в льготный период без процентов", term: term_cash_withdrawal}
+          - {label: Fee, id: balt_credit_transfer_fee, name: "Комиссия за перевод с карты", value: "3,9% + 390 ₽, в льготный период без процентов", term: term_cc_transfer}
+  - number: 4
+    title: Кэшбэк и бонусы
+    clauses:
+      - id: "4.1"
+        text: "Бонусы «ЯРКО»: до 25% у партнёров, 1 бонус = 1 ₽."
+        node: {label: Condition, id: balt_credit_cashback, name: "Кэшбэк", value: "бонусы «ЯРКО»: до 25% у партнёров, 1 бонус = 1 ₽", term: term_cashback}
+  - number: 5
+    title: Минимальный платёж и ответственность
+    clauses:
+      - id: "5.1"
+        text: "Минимальный платёж — 5% от задолженности, но не менее 500 ₽."
+        node: {label: Condition, id: balt_credit_minpay, name: "Минимальный платёж", value: "5% от задолженности, не менее 500 ₽", term: term_minpay}
+      - id: "5.2"
+        text: "При пропуске минимального платежа — штраф 590 ₽ и неустойка 0,1% в день, льготный период отменяется."
+        nodes:
+          - {label: Fee, id: balt_credit_fine, name: "Штраф за пропуск платежа", value: "590 ₽", term: term_fine}
+          - {label: Fee, id: balt_credit_penalty, name: "Неустойка за просрочку", value: "0,1% в день", term: term_penalty}
+events:
+  - {rel: CANCELS, event: ev_not_full_repay, target: balt_credit_grace, section: "2.2"}
+  - {rel: TRIGGERS, event: ev_not_full_repay, target: balt_credit_rate, section: "2.2"}
+  - {rel: TRIGGERS, event: ev_cash, target: balt_credit_cash_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_transfer, target: balt_credit_transfer_fee, section: "3.1"}
+  - {rel: CANCELS, event: ev_missed_payment, target: balt_credit_grace, section: "5.2"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: balt_credit_fine, section: "5.2"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: balt_credit_penalty, section: "5.2"}

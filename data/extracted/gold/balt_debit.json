@@ -1,0 +1,126 @@
+{
+ "nodes": [
+  {
+   "id": "balt_debit_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽ при покупках от 15 000 ₽ в месяц или остатке от 30 000 ₽, иначе 149 ₽ в месяц",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "balt_debit_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "1,5% бонусами «ЯРКО» за все покупки, 1 бонус = 1 ₽",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "balt_debit_balance",
+   "label": "Condition",
+   "name": "Процент на остаток",
+   "value": "до 15% годовых",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "balt_debit_cb_x_transfer",
+   "label": "Exception",
+   "name": "Переводы",
+   "value": "",
+   "aliases": "",
+   "section": "3.3"
+  },
+  {
+   "id": "balt_debit_cb_x_cash",
+   "label": "Exception",
+   "name": "Снятие наличных",
+   "value": "",
+   "aliases": "",
+   "section": "3.3"
+  },
+  {
+   "id": "balt_debit_cb_x_utilities",
+   "label": "Exception",
+   "name": "Оплата ЖКХ",
+   "value": "",
+   "aliases": "",
+   "section": "3.3"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "balt_debit",
+   "balt_debit_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_debit_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_debit",
+   "balt_debit_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_debit_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_debit",
+   "balt_debit_balance",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_debit_balance",
+   "term_balance_interest",
+   "3.2"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "balt_debit_cashback",
+   "balt_debit_cb_x_transfer",
+   "3.3"
+  ],
+  [
+   "APPLIES_TO",
+   "balt_debit_cb_x_transfer",
+   "ev_transfer",
+   "3.3"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "balt_debit_cashback",
+   "balt_debit_cb_x_cash",
+   "3.3"
+  ],
+  [
+   "APPLIES_TO",
+   "balt_debit_cb_x_cash",
+   "ev_cash",
+   "3.3"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "balt_debit_cashback",
+   "balt_debit_cb_x_utilities",
+   "3.3"
+  ],
+  [
+   "TRIGGERS",
+   "ev_low_spend",
+   "balt_debit_service",
+   "1.1"
+  ]
+ ]
+}

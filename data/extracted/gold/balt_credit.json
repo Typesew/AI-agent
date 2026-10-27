@@ -1,0 +1,268 @@
+{
+ "nodes": [
+  {
+   "id": "balt_credit_limit",
+   "label": "Condition",
+   "name": "Кредитный лимит",
+   "value": "до 2 000 000 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "balt_credit_rate",
+   "label": "Condition",
+   "name": "Процентная ставка",
+   "value": "49,9–59,9% годовых",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "balt_credit_psk",
+   "label": "Condition",
+   "name": "ПСК",
+   "value": "50,820–60,996% годовых",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "balt_credit_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽ навсегда",
+   "aliases": "",
+   "section": "1.3"
+  },
+  {
+   "id": "balt_credit_grace",
+   "label": "Condition",
+   "name": "Льготный период",
+   "value": "до 100 дней на покупки, переводы и снятие наличных (без исключений)",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "balt_credit_cash_fee",
+   "label": "Fee",
+   "name": "Комиссия за снятие наличных",
+   "value": "3,9% + 390 ₽, в льготный период без процентов",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "balt_credit_transfer_fee",
+   "label": "Fee",
+   "name": "Комиссия за перевод с карты",
+   "value": "3,9% + 390 ₽, в льготный период без процентов",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "balt_credit_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "бонусы «ЯРКО»: до 25% у партнёров, 1 бонус = 1 ₽",
+   "aliases": "",
+   "section": "4.1"
+  },
+  {
+   "id": "balt_credit_minpay",
+   "label": "Condition",
+   "name": "Минимальный платёж",
+   "value": "5% от задолженности, не менее 500 ₽",
+   "aliases": "",
+   "section": "5.1"
+  },
+  {
+   "id": "balt_credit_fine",
+   "label": "Fee",
+   "name": "Штраф за пропуск платежа",
+   "value": "590 ₽",
+   "aliases": "",
+   "section": "5.2"
+  },
+  {
+   "id": "balt_credit_penalty",
+   "label": "Fee",
+   "name": "Неустойка за просрочку",
+   "value": "0,1% в день",
+   "aliases": "",
+   "section": "5.2"
+  }
+ ],
+ "edges": [
+  [
+   "HAS_CONDITION",
+   "balt_credit",
+   "balt_credit_limit",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_limit",
+   "term_credit_limit",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_credit",
+   "balt_credit_rate",
+   "1.2"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_rate",
+   "term_rate",
+   "1.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_credit",
+   "balt_credit_psk",
+   "1.2"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_psk",
+   "term_psk",
+   "1.2"
+  ],
+  [
+   "CHARGES",
+   "balt_credit",
+   "balt_credit_service",
+   "1.3"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_service",
+   "term_service_fee",
+   "1.3"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_credit",
+   "balt_credit_grace",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_grace",
+   "term_grace",
+   "2.1"
+  ],
+  [
+   "CHARGES",
+   "balt_credit",
+   "balt_credit_cash_fee",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_cash_fee",
+   "term_cash_withdrawal",
+   "3.1"
+  ],
+  [
+   "CHARGES",
+   "balt_credit",
+   "balt_credit_transfer_fee",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_transfer_fee",
+   "term_cc_transfer",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_credit",
+   "balt_credit_cashback",
+   "4.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_cashback",
+   "term_cashback",
+   "4.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_credit",
+   "balt_credit_minpay",
+   "5.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_minpay",
+   "term_minpay",
+   "5.1"
+  ],
+  [
+   "CHARGES",
+   "balt_credit",
+   "balt_credit_fine",
+   "5.2"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_fine",
+   "term_fine",
+   "5.2"
+  ],
+  [
+   "CHARGES",
+   "balt_credit",
+   "balt_credit_penalty",
+   "5.2"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_credit_penalty",
+   "term_penalty",
+   "5.2"
+  ],
+  [
+   "CANCELS",
+   "ev_not_full_repay",
+   "balt_credit_grace",
+   "2.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_not_full_repay",
+   "balt_credit_rate",
+   "2.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_cash",
+   "balt_credit_cash_fee",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_transfer",
+   "balt_credit_transfer_fee",
+   "3.1"
+  ],
+  [
+   "CANCELS",
+   "ev_missed_payment",
+   "balt_credit_grace",
+   "5.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "balt_credit_fine",
+   "5.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "balt_credit_penalty",
+   "5.2"
+  ]
+ ]
+}

@@ -1,0 +1,134 @@
+{
+ "nodes": [
+  {
+   "id": "opora_debit_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽ при остатке от 50 000 ₽, кредите, пенсии или соцвыплатах либо возрасте до 18 лет; иначе 99 ₽ в месяц",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "opora_debit_delivery",
+   "label": "Condition",
+   "name": "Доставка карты",
+   "value": "бесплатно, 1–2 дня",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "opora_debit_currency",
+   "label": "Condition",
+   "name": "Мультивалютность",
+   "value": "рубли, доллары, евро и ещё 15 валют",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "opora_debit_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "до 15% в 4 категориях, до 30% у партнёров",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "opora_debit_cb_x_transfer",
+   "label": "Exception",
+   "name": "Переводы",
+   "value": "",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "opora_debit_cb_x_cash",
+   "label": "Exception",
+   "name": "Снятие наличных",
+   "value": "",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "opora_debit_cb_x_utilities",
+   "label": "Exception",
+   "name": "Оплата ЖКХ",
+   "value": "",
+   "aliases": "",
+   "section": "3.2"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "opora_debit",
+   "opora_debit_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_debit_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_debit",
+   "opora_debit_delivery",
+   "1.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_debit",
+   "opora_debit_currency",
+   "2.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "opora_debit",
+   "opora_debit_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "opora_debit_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "opora_debit_cashback",
+   "opora_debit_cb_x_transfer",
+   "3.2"
+  ],
+  [
+   "APPLIES_TO",
+   "opora_debit_cb_x_transfer",
+   "ev_transfer",
+   "3.2"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "opora_debit_cashback",
+   "opora_debit_cb_x_cash",
+   "3.2"
+  ],
+  [
+   "APPLIES_TO",
+   "opora_debit_cb_x_cash",
+   "ev_cash",
+   "3.2"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "opora_debit_cashback",
+   "opora_debit_cb_x_utilities",
+   "3.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_low_spend",
+   "opora_debit_service",
+   "1.1"
+  ]
+ ]
+}

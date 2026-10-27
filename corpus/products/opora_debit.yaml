@@ -1,0 +1,38 @@
+doc_id: opora_debit
+bank_id: bank_opora
+bank: Банк «Точка Опоры»
+product: Опорная Black
+product_term: term_debit_card
+doc_type: debit_card
+date: 2026-08-15
+aliases: [опорная black, опорная блэк]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Обслуживание — 0 ₽, если выполнено одно из условий: остаток от 50 000 ₽; есть кредит в банке; на карту приходит пенсия или соцвыплаты; возраст до 18 лет. Иначе — 99 ₽ в месяц."
+        node: {label: Fee, id: opora_debit_service, name: "Обслуживание карты", value: "0 ₽ при остатке от 50 000 ₽, кредите, пенсии или соцвыплатах либо возрасте до 18 лет; иначе 99 ₽ в месяц", term: term_service_fee}
+      - id: "1.2"
+        text: "Доставка карты — бесплатно за 1–2 дня."
+        node: {label: Condition, id: opora_debit_delivery, name: "Доставка карты", value: "бесплатно, 1–2 дня"}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "Карта мультивалютная: рубли, доллары, евро и ещё 15 валют."
+        node: {label: Condition, id: opora_debit_currency, name: "Мультивалютность", value: "рубли, доллары, евро и ещё 15 валют"}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "Кэшбэк — до 15% в 4 категориях и до 30% у партнёров."
+        node: {label: Condition, id: opora_debit_cashback, name: "Кэшбэк", value: "до 15% в 4 категориях, до 30% у партнёров", term: term_cashback}
+      - id: "3.2"
+        text: "Кэшбэк не начисляется на: переводы; снятие наличных; оплату ЖКХ."
+        nodes:
+          - {label: Exception, id: opora_debit_cb_x_transfer, name: "Переводы", of: opora_debit_cashback, event: ev_transfer}
+          - {label: Exception, id: opora_debit_cb_x_cash, name: "Снятие наличных", of: opora_debit_cashback, event: ev_cash}
+          - {label: Exception, id: opora_debit_cb_x_utilities, name: "Оплата ЖКХ", of: opora_debit_cashback}
+events:
+  - {rel: TRIGGERS, event: ev_low_spend, target: opora_debit_service, section: "1.1"}

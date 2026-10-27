@@ -1,0 +1,222 @@
+{
+ "nodes": [
+  {
+   "id": "merid_install_term",
+   "label": "Condition",
+   "name": "Срок рассрочки",
+   "value": "3, 6 или 12 месяцев в зависимости от магазина",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "merid_install_zero",
+   "label": "Condition",
+   "name": "Рассрочка без переплаты",
+   "value": "0% при соблюдении графика",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "merid_install_partners",
+   "label": "Condition",
+   "name": "Где работает",
+   "value": "только терминалы партнёров, без снятия наличных",
+   "aliases": "",
+   "section": "1.3"
+  },
+  {
+   "id": "merid_install_sms",
+   "label": "Fee",
+   "name": "СМС-информирование",
+   "value": "59 ₽ в месяц, подключается автоматически",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "merid_install_after",
+   "label": "Condition",
+   "name": "Кредит после просрочки",
+   "value": "34,9% годовых на остаток",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "merid_install_fine",
+   "label": "Fee",
+   "name": "Штраф за пропуск платежа",
+   "value": "590 ₽",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "merid_install_penalty",
+   "label": "Fee",
+   "name": "Неустойка за просрочку",
+   "value": "0,1% в день",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "merid_install_early",
+   "label": "Condition",
+   "name": "Требование досрочного погашения",
+   "value": "банк вправе потребовать вернуть всю сумму",
+   "aliases": "",
+   "section": "3.3"
+  },
+  {
+   "id": "merid_install_bki",
+   "label": "Condition",
+   "name": "Отметка в кредитной истории",
+   "value": "просрочка передаётся в бюро кредитных историй",
+   "aliases": "",
+   "section": "3.3"
+  }
+ ],
+ "edges": [
+  [
+   "HAS_CONDITION",
+   "merid_install",
+   "merid_install_term",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_install",
+   "merid_install_zero",
+   "1.2"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_zero",
+   "term_installment",
+   "1.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_install",
+   "merid_install_partners",
+   "1.3"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_partners",
+   "term_bnpl",
+   "1.3"
+  ],
+  [
+   "CHARGES",
+   "merid_install",
+   "merid_install_sms",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_sms",
+   "term_service_fee",
+   "2.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_install",
+   "merid_install_after",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_after",
+   "term_rate",
+   "3.1"
+  ],
+  [
+   "CHARGES",
+   "merid_install",
+   "merid_install_fine",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_fine",
+   "term_fine",
+   "3.2"
+  ],
+  [
+   "CHARGES",
+   "merid_install",
+   "merid_install_penalty",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_penalty",
+   "term_penalty",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_install",
+   "merid_install_early",
+   "3.3"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_early",
+   "term_early",
+   "3.3"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_install",
+   "merid_install_bki",
+   "3.3"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_install_bki",
+   "term_credit_history",
+   "3.3"
+  ],
+  [
+   "TRIGGERS",
+   "ev_paid_service",
+   "merid_install_sms",
+   "2.1"
+  ],
+  [
+   "CANCELS",
+   "ev_missed_payment",
+   "merid_install_zero",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "merid_install_after",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "merid_install_fine",
+   "3.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "merid_install_penalty",
+   "3.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_two",
+   "merid_install_early",
+   "3.3"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_two",
+   "merid_install_bki",
+   "3.3"
+  ]
+ ]
+}

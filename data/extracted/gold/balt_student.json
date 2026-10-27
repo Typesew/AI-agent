@@ -1,0 +1,126 @@
+{
+ "nodes": [
+  {
+   "id": "balt_student_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "balt_student_metro",
+   "label": "Condition",
+   "name": "Скидка на метро",
+   "value": "по городскому проекту",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "balt_student_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "1,5% бонусами «ЯРКО»",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "balt_student_balance",
+   "label": "Condition",
+   "name": "Процент на остаток",
+   "value": "до 15% годовых",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "balt_student_age",
+   "label": "Condition",
+   "name": "Возрастной предел",
+   "value": "до 25 лет",
+   "aliases": "",
+   "section": "4.1"
+  },
+  {
+   "id": "balt_student_convert",
+   "label": "Condition",
+   "name": "Перевод на «Яркая Карта»",
+   "value": "149 ₽ в месяц, если условия «Яркая Карта» не выполнены",
+   "aliases": "",
+   "section": "4.2"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "balt_student",
+   "balt_student_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_student_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_student",
+   "balt_student_metro",
+   "1.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_student",
+   "balt_student_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_student_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_student",
+   "balt_student_balance",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_student_balance",
+   "term_balance_interest",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_student",
+   "balt_student_age",
+   "4.1"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_student_age",
+   "term_student_card",
+   "4.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "balt_student",
+   "balt_student_convert",
+   "4.2"
+  ],
+  [
+   "DEFINED_AS",
+   "balt_student_convert",
+   "term_service_fee",
+   "4.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_student_lost",
+   "balt_student_convert",
+   "4.2"
+  ]
+ ]
+}

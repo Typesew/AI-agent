@@ -1,0 +1,21 @@
+balt_credit (qwen3:8b)
+  balt_credit#1: узлов 4 (от модели 9), связей 8
+  balt_credit#2: узлов 2 (от модели 12), связей 7
+  balt_credit#3: узлов 2 (от модели 12), связей 9
+  balt_credit#4: узлов 1 (от модели 3), связей 1
+  balt_credit#5: узлов 4 (от модели 8), связей 15
+sever_install (qwen3:8b)
+  sever_install#1: узлов 2 (от модели 11), связей 4
+  sever_install#2: узлов 1 (от модели 3), связей 2
+  sever_install#3: ПРОПУЩЕН (JSONDecodeError: Unterminated string starting at: line 146 column 13 (char 3473))
+Пропущено разделов: 1 — sever_install#3
+opora_debit (qwen3:8b)
+  opora_debit#1: узлов 10 (от модели 12), связей 8
+  opora_debit#2: узлов 0 (от модели 0), связей 0
+  opora_debit#3: ПРОПУЩЕН (JSONDecodeError: Expecting property name enclosed in double quotes: line 134 column 6 (char 3329))
+Пропущено разделов: 1 — opora_debit#3
+kedr_student (qwen3:8b)
+  kedr_student#1: узлов 2 (от модели 7), связей 4
+  kedr_student#2: узлов 1 (от модели 4), связей 1
+  kedr_student#3: узлов 3 (от модели 12), связей 6
+  kedr_student#4: узлов 3 (от модели 9), связей 2

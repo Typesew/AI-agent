@@ -1,0 +1,33 @@
+# Свободные формулировки.
+doc_id: balt_debit
+bank_id: bank_balt
+bank: Банк «Балтийский»
+product: Яркая Карта
+product_term: term_debit_card
+doc_type: debit_card
+date: 2026-09-15
+aliases: [яркая карта]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Карта обслуживается бесплатно, если вы тратите от 15 000 ₽ в месяц или держите на счёте от 30 000 ₽. Не получилось — спишем 149 ₽ за месяц."
+        node: {label: Fee, id: balt_debit_service, name: "Обслуживание карты", value: "0 ₽ при покупках от 15 000 ₽ в месяц или остатке от 30 000 ₽, иначе 149 ₽ в месяц", term: term_service_fee}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "За любые покупки возвращаем 1,5% бонусами «ЯРКО»; бонус равен рублю, и им можно возместить покупки."
+        node: {label: Condition, id: balt_debit_cashback, name: "Кэшбэк", value: "1,5% бонусами «ЯРКО» за все покупки, 1 бонус = 1 ₽", term: term_cashback}
+      - id: "3.2"
+        text: "Деньги на карте приносят до 15% годовых."
+        node: {label: Condition, id: balt_debit_balance, name: "Процент на остаток", value: "до 15% годовых", term: term_balance_interest}
+      - id: "3.3"
+        text: "Бонусы не начисляются, если вы переводите деньги, снимаете наличные или платите за ЖКХ."
+        nodes:
+          - {label: Exception, id: balt_debit_cb_x_transfer, name: "Переводы", of: balt_debit_cashback, event: ev_transfer}
+          - {label: Exception, id: balt_debit_cb_x_cash, name: "Снятие наличных", of: balt_debit_cashback, event: ev_cash}
+          - {label: Exception, id: balt_debit_cb_x_utilities, name: "Оплата ЖКХ", of: balt_debit_cashback}
+events:
+  - {rel: TRIGGERS, event: ev_low_spend, target: balt_debit_service, section: "1.1"}

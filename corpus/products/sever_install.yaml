@@ -1,0 +1,45 @@
+doc_id: sever_install
+bank_id: bank_sever
+bank: Банк «Северный Путь»
+product: Плати частями
+product_term: term_installment
+doc_type: installment
+date: 2026-09-01
+aliases: [плати частями]
+# «платить частями» — общая фраза, а не продукт: слово «плати» должно совпасть целиком
+match_phrases: ["=плати частями"]
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Рассрочка на 2 месяца, переплата — 0%."
+        node: {label: Condition, id: sever_install_zero, name: "Рассрочка без переплаты", value: "0% переплаты, срок 2 месяца", term: term_installment}
+      - id: "1.2"
+        text: "Оформление на кассе через терминал, без заявки. Доступно на терминалах банка-партнёра."
+        node: {label: Condition, id: sever_install_terminal, name: "Оформление", value: "на кассе через терминал банка-партнёра, без заявки", term: term_bnpl}
+  - number: 2
+    title: Комиссии
+    clauses:
+      - id: "2.1"
+        text: "Комиссия за оформление и обслуживание рассрочки — 0 ₽."
+        node: {label: Fee, id: sever_install_service, name: "Обслуживание рассрочки", value: "0 ₽", term: term_service_fee}
+  - number: 3
+    title: Просрочка
+    clauses:
+      - id: "3.1"
+        text: "За пропуск платежа — штраф 500 ₽ и неустойка 0,1% в день от просроченной суммы."
+        nodes:
+          - {label: Fee, id: sever_install_fine, name: "Штраф за пропуск платежа", value: "500 ₽ за пропуск", term: term_fine}
+          - {label: Fee, id: sever_install_penalty, name: "Неустойка за просрочку", value: "0,1% в день от просроченной суммы", term: term_penalty}
+      - id: "3.2"
+        text: "При пропуске двух платежей подряд условие 0% отменяется: остаток переходит в кредит под 39,9% годовых, банк вправе потребовать досрочного погашения."
+        nodes:
+          - {label: Condition, id: sever_install_after, name: "Кредит после отмены 0%", value: "остаток переходит в кредит под 39,9% годовых", term: term_rate}
+          - {label: Condition, id: sever_install_early, name: "Требование досрочного погашения", value: "банк вправе потребовать вернуть всю сумму", term: term_early}
+events:
+  - {rel: TRIGGERS, event: ev_missed_payment, target: sever_install_fine, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: sever_install_penalty, section: "3.1"}
+  - {rel: CANCELS, event: ev_missed_two, target: sever_install_zero, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: sever_install_after, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: sever_install_early, section: "3.2"}

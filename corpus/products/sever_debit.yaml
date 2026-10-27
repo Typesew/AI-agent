@@ -1,0 +1,41 @@
+doc_id: sever_debit
+bank_id: bank_sever
+bank: Банк «Северный Путь»
+product: Северная Карта
+product_term: term_debit_card
+doc_type: debit_card
+date: 2026-09-01
+aliases: [северная карта]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Обслуживание — 0 ₽ без условий."
+        node: {label: Fee, id: sever_debit_service, name: "Обслуживание карты", value: "0 ₽ без условий", term: term_service_fee}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "Переводы внутри банка — без комиссии до 300 000 ₽ в месяц."
+        node: {label: Condition, id: sever_debit_transfer_limit, name: "Бесплатные переводы", value: "внутри банка до 300 000 ₽ в месяц"}
+      - id: "2.2"
+        text: "Переводы сверх лимита — комиссия 0,5% от суммы перевода."
+        node: {label: Fee, id: sever_debit_over_limit, name: "Комиссия за переводы сверх лимита", value: "0,5% от суммы перевода"}
+      - id: "2.3"
+        text: "Оплата ЖКХ — без комиссии."
+        node: {label: Condition, id: sever_debit_utilities, name: "Оплата ЖКХ", value: "без комиссии"}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "Кэшбэк бонусами «Спасибо» в категориях на выбор."
+        node: {label: Condition, id: sever_debit_cashback, name: "Кэшбэк", value: "бонусы «Спасибо» в категориях на выбор", term: term_cashback}
+      - id: "3.2"
+        text: "Кэшбэк не начисляется на: переводы; снятие наличных; оплату ЖКХ."
+        nodes:
+          - {label: Exception, id: sever_debit_cb_x_transfer, name: "Переводы", of: sever_debit_cashback, event: ev_transfer}
+          - {label: Exception, id: sever_debit_cb_x_cash, name: "Снятие наличных", of: sever_debit_cashback, event: ev_cash}
+          - {label: Exception, id: sever_debit_cb_x_utilities, name: "Оплата ЖКХ", of: sever_debit_cashback}
+events:
+  - {rel: TRIGGERS, event: ev_limit_exceeded, target: sever_debit_over_limit, section: "2.2"}

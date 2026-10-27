@@ -1,0 +1,132 @@
+{
+ "nodes": [
+  {
+   "id": "merid_student_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "merid_student_cash",
+   "label": "Condition",
+   "name": "Снятие наличных",
+   "value": "без комиссии в партнёрской сети",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "merid_student_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "до 5% в категориях, 1% на всё",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "merid_student_balance",
+   "label": "Condition",
+   "name": "Процент на остаток",
+   "value": "до 8% годовых на остаток до 100 000 ₽",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "merid_student_age",
+   "label": "Condition",
+   "name": "Возрастной предел",
+   "value": "до 24 лет",
+   "aliases": "",
+   "section": "4.1"
+  },
+  {
+   "id": "merid_student_convert",
+   "label": "Condition",
+   "name": "Перевод на «Меридиан Карта»",
+   "value": "обслуживание 0 ₽, процент на остаток на сумму до 300 000 ₽",
+   "aliases": "",
+   "section": "4.2"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "merid_student",
+   "merid_student_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_student_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_student",
+   "merid_student_cash",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_student_cash",
+   "term_cash_withdrawal",
+   "2.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_student",
+   "merid_student_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_student_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_student",
+   "merid_student_balance",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_student_balance",
+   "term_balance_interest",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_student",
+   "merid_student_age",
+   "4.1"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_student_age",
+   "term_student_card",
+   "4.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "merid_student",
+   "merid_student_convert",
+   "4.2"
+  ],
+  [
+   "DEFINED_AS",
+   "merid_student_convert",
+   "term_service_fee",
+   "4.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_student_lost",
+   "merid_student_convert",
+   "4.2"
+  ]
+ ]
+}

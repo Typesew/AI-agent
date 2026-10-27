@@ -1,0 +1,176 @@
+{
+ "nodes": [
+  {
+   "id": "sever_install_zero",
+   "label": "Condition",
+   "name": "Рассрочка без переплаты",
+   "value": "0% переплаты, срок 2 месяца",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "sever_install_terminal",
+   "label": "Condition",
+   "name": "Оформление",
+   "value": "на кассе через терминал банка-партнёра, без заявки",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "sever_install_service",
+   "label": "Fee",
+   "name": "Обслуживание рассрочки",
+   "value": "0 ₽",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "sever_install_fine",
+   "label": "Fee",
+   "name": "Штраф за пропуск платежа",
+   "value": "500 ₽ за пропуск",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "sever_install_penalty",
+   "label": "Fee",
+   "name": "Неустойка за просрочку",
+   "value": "0,1% в день от просроченной суммы",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "sever_install_after",
+   "label": "Condition",
+   "name": "Кредит после отмены 0%",
+   "value": "остаток переходит в кредит под 39,9% годовых",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "sever_install_early",
+   "label": "Condition",
+   "name": "Требование досрочного погашения",
+   "value": "банк вправе потребовать вернуть всю сумму",
+   "aliases": "",
+   "section": "3.2"
+  }
+ ],
+ "edges": [
+  [
+   "HAS_CONDITION",
+   "sever_install",
+   "sever_install_zero",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_install_zero",
+   "term_installment",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_install",
+   "sever_install_terminal",
+   "1.2"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_install_terminal",
+   "term_bnpl",
+   "1.2"
+  ],
+  [
+   "CHARGES",
+   "sever_install",
+   "sever_install_service",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_install_service",
+   "term_service_fee",
+   "2.1"
+  ],
+  [
+   "CHARGES",
+   "sever_install",
+   "sever_install_fine",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_install_fine",
+   "term_fine",
+   "3.1"
+  ],
+  [
+   "CHARGES",
+   "sever_install",
+   "sever_install_penalty",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_install_penalty",
+   "term_penalty",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_install",
+   "sever_install_after",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_install_after",
+   "term_rate",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_install",
+   "sever_install_early",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_install_early",
+   "term_early",
+   "3.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "sever_install_fine",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "sever_install_penalty",
+   "3.1"
+  ],
+  [
+   "CANCELS",
+   "ev_missed_two",
+   "sever_install_zero",
+   "3.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_two",
+   "sever_install_after",
+   "3.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_two",
+   "sever_install_early",
+   "3.2"
+  ]
+ ]
+}

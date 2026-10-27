@@ -1,0 +1,232 @@
+{
+ "nodes": [
+  {
+   "id": "kedr_debit_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽, выпуск 0 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "kedr_debit_cash",
+   "label": "Condition",
+   "name": "Снятие наличных",
+   "value": "без комиссии в банкоматах банка-партнёра",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "kedr_debit_sbp",
+   "label": "Condition",
+   "name": "Переводы по СБП",
+   "value": "бесплатно",
+   "aliases": "",
+   "section": "2.2"
+  },
+  {
+   "id": "kedr_debit_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "1% на всё + до 25% в 4 категориях",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "kedr_debit_subscription",
+   "label": "Fee",
+   "name": "Подписка (5-я категория)",
+   "value": "199 ₽ в месяц или 1 790 ₽ в год",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "kedr_debit_cb_limit",
+   "label": "Condition",
+   "name": "Лимит кэшбэка",
+   "value": "3 000 ₽ в месяц, из них 1 500 ₽ в повышенных категориях",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "kedr_debit_balance",
+   "label": "Condition",
+   "name": "Процент на остаток",
+   "value": "до 15,1% годовых по промо 3 месяца, базовая 7%",
+   "aliases": "",
+   "section": "3.3"
+  },
+  {
+   "id": "kedr_debit_balance_after",
+   "label": "Condition",
+   "name": "Ставка после промо",
+   "value": "7% годовых",
+   "aliases": "",
+   "section": "3.3"
+  },
+  {
+   "id": "kedr_debit_cb_x_transfer",
+   "label": "Exception",
+   "name": "Переводы",
+   "value": "",
+   "aliases": "",
+   "section": "3.4"
+  },
+  {
+   "id": "kedr_debit_cb_x_cash",
+   "label": "Exception",
+   "name": "Снятие наличных",
+   "value": "",
+   "aliases": "",
+   "section": "3.4"
+  },
+  {
+   "id": "kedr_debit_cb_x_utilities",
+   "label": "Exception",
+   "name": "Оплата ЖКХ",
+   "value": "",
+   "aliases": "",
+   "section": "3.4"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "kedr_debit",
+   "kedr_debit_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_debit",
+   "kedr_debit_cash",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_cash",
+   "term_cash_withdrawal",
+   "2.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_debit",
+   "kedr_debit_sbp",
+   "2.2"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_sbp",
+   "term_sbp",
+   "2.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_debit",
+   "kedr_debit_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "CHARGES",
+   "kedr_debit",
+   "kedr_debit_subscription",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_subscription",
+   "term_subscription",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_debit",
+   "kedr_debit_cb_limit",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_cb_limit",
+   "term_cashback_limit",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_debit",
+   "kedr_debit_balance",
+   "3.3"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_balance",
+   "term_balance_interest",
+   "3.3"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_debit",
+   "kedr_debit_balance_after",
+   "3.3"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_debit_balance_after",
+   "term_balance_interest",
+   "3.3"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "kedr_debit_cashback",
+   "kedr_debit_cb_x_transfer",
+   "3.4"
+  ],
+  [
+   "APPLIES_TO",
+   "kedr_debit_cb_x_transfer",
+   "ev_transfer",
+   "3.4"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "kedr_debit_cashback",
+   "kedr_debit_cb_x_cash",
+   "3.4"
+  ],
+  [
+   "APPLIES_TO",
+   "kedr_debit_cb_x_cash",
+   "ev_cash",
+   "3.4"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "kedr_debit_cashback",
+   "kedr_debit_cb_x_utilities",
+   "3.4"
+  ],
+  [
+   "TRIGGERS",
+   "ev_paid_service",
+   "kedr_debit_subscription",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_promo_end",
+   "kedr_debit_balance_after",
+   "3.3"
+  ]
+ ]
+}

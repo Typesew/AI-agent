@@ -1,0 +1,71 @@
+doc_id: merid_credit
+bank_id: bank_merid
+bank: Банк «Меридиан»
+product: Меридиан 150
+product_term: term_credit_card
+doc_type: credit_card
+date: 2026-10-01
+aliases: [меридиан 150]
+tool_params: {grace_days: 150, grace_mode: base_plus_extension}
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Кредитный лимит — до 1 000 000 ₽."
+        node: {label: Condition, id: merid_credit_limit, name: "Кредитный лимит", value: "до 1 000 000 ₽", term: term_credit_limit}
+      - id: "1.2"
+        text: "Процентная ставка вне льготного периода — от 58,49% до 58,99% годовых."
+        node: {label: Condition, id: merid_credit_rate, name: "Процентная ставка", value: "58,49–58,99% годовых вне льготного периода", term: term_rate}
+      - id: "1.3"
+        text: "Обслуживание карты — 0 ₽."
+        node: {label: Fee, id: merid_credit_service, name: "Обслуживание карты", value: "0 ₽", term: term_service_fee}
+  - number: 2
+    title: Льготный период
+    clauses:
+      - id: "2.1"
+        text: "Льготный период — до 150 дней: 60 дней базовых и ещё 90 дней через услугу продления."
+        node: {label: Condition, id: merid_credit_grace, name: "Льготный период", value: "до 150 дней: 60 базовых + 90 через продление", term: term_grace}
+      - id: "2.2"
+        text: "Первое продление льготного периода бесплатно, каждое следующее — 1,9% от суммы долга на начало месяца."
+        node: {label: Condition, id: merid_credit_extension, name: "Продление льготного периода", value: "первое бесплатно, далее 1,9% от долга на начало месяца", term: term_grace_extension}
+      - id: "2.3"
+        text: "Льготный период не распространяется на снятие наличных."
+        node: {label: Exception, id: merid_credit_grace_x_cash, name: "Снятие наличных", of: merid_credit_grace, event: ev_cash}
+      - id: "2.4"
+        text: "Если к концу льготного периода долг погашен не полностью, проценты начисляются с даты покупки."
+      - id: "2.5"
+        text: "При пропуске минимального платежа льготный период и продление отменяются."
+  - number: 3
+    title: Обслуживание и комиссии
+    clauses:
+      - id: "3.1"
+        text: "Снятие наличных — без комиссии до 50 000 ₽ в месяц, сверх лимита — 5,9% + 590 ₽."
+        node: {label: Fee, id: merid_credit_cash_fee, name: "Комиссия за снятие наличных", value: "0 ₽ до 50 000 ₽ в месяц, сверх — 5,9% + 590 ₽", term: term_cash_withdrawal}
+      - id: "3.2"
+        text: "Переводы с кредитной карты — 5,9% + 590 ₽, проценты начисляются с даты операции."
+        node: {label: Fee, id: merid_credit_transfer_fee, name: "Комиссия за перевод с карты", value: "5,9% + 590 ₽, проценты с даты операции", term: term_cc_transfer}
+  - number: 4
+    title: Кэшбэк и бонусы
+    clauses:
+      - id: "4.1"
+        text: "Кэшбэк: до 100% в барабане суперкэшбэка, до 50% у партнёров, до 30% в выбранных категориях с подпиской."
+        node: {label: Condition, id: merid_credit_cashback, name: "Кэшбэк", value: "до 100% в барабане суперкэшбэка, до 50% у партнёров, до 30% в категориях с подпиской", term: term_cashback}
+  - number: 5
+    title: Минимальный платёж и ответственность
+    clauses:
+      - id: "5.1"
+        text: "Минимальный платёж — до 10% основного долга, но не менее 300 ₽."
+        node: {label: Condition, id: merid_credit_minpay, name: "Минимальный платёж", value: "до 10% основного долга, не менее 300 ₽", term: term_minpay}
+      - id: "5.2"
+        text: "При пропуске минимального платежа начисляется неустойка 0,1% в день."
+        node: {label: Fee, id: merid_credit_penalty, name: "Неустойка за просрочку", value: "0,1% в день", term: term_penalty}
+events:
+  - {rel: TRIGGERS, event: ev_paid_service, target: merid_credit_extension, section: "2.2"}
+  - {rel: CANCELS, event: ev_not_full_repay, target: merid_credit_grace, section: "2.4"}
+  - {rel: TRIGGERS, event: ev_not_full_repay, target: merid_credit_rate, section: "2.4"}
+  - {rel: CANCELS, event: ev_missed_payment, target: merid_credit_grace, section: "2.5"}
+  - {rel: CANCELS, event: ev_missed_payment, target: merid_credit_extension, section: "2.5"}
+  - {rel: TRIGGERS, event: ev_limit_exceeded, target: merid_credit_cash_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_transfer, target: merid_credit_transfer_fee, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: merid_credit_penalty, section: "5.2"}

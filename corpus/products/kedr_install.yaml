@@ -1,0 +1,53 @@
+doc_id: kedr_install
+bank_id: bank_kedr
+bank: Банк «Кедр»
+product: Кедр Рассрочка
+product_term: term_installment
+doc_type: installment
+date: 2026-07-20
+aliases: [кедр рассрочка]
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Лимит рассрочки — до 500 000 ₽."
+        node: {label: Condition, id: kedr_install_limit, name: "Лимит рассрочки", value: "до 500 000 ₽", term: term_credit_limit}
+      - id: "1.2"
+        text: "Срок — 6, 12 или 24 месяца."
+        node: {label: Condition, id: kedr_install_term, name: "Срок рассрочки", value: "6, 12 или 24 месяца"}
+      - id: "1.3"
+        text: "Льготный период — до 5 недель: если погасить покупку в срок, переплаты нет; иначе — доплата, её размер виден при покупке."
+        node: {label: Condition, id: kedr_install_grace, name: "Льготный период", value: "до 5 недель без переплаты, потом доплата", term: term_grace}
+      - id: "1.4"
+        text: "Минимального платежа нет."
+        node: {label: Condition, id: kedr_install_nominpay, name: "Минимальный платёж", value: "отсутствует", term: term_minpay}
+      - id: "1.5"
+        text: "Рассрочка работает только для товаров маркетплейса-партнёра."
+        node: {label: Condition, id: kedr_install_market, name: "Где работает", value: "только товары маркетплейса-партнёра", term: term_bnpl}
+      - id: "1.6"
+        text: "В кредитной истории рассрочка отражается как заём микрокредитной компании (МКК)."
+        node: {label: Condition, id: kedr_install_mfo, name: "Отражение в кредитной истории", value: "как заём МКК", term: term_mfo}
+  - number: 2
+    title: Комиссии
+    clauses:
+      - id: "2.1"
+        text: "Если не погасить покупку в льготный период, взимается доплата по условиям конкретной покупки."
+        node: {label: Fee, id: kedr_install_surcharge, name: "Доплата", value: "по условиям покупки, если не погасить в льготный период", term: term_overdue}
+  - number: 3
+    title: Просрочка
+    clauses:
+      - id: "3.1"
+        text: "Пропуск оплаты в срок — доплата по условиям покупки и неустойка 0,1% в день."
+        node: {label: Fee, id: kedr_install_penalty, name: "Неустойка за просрочку", value: "0,1% в день", term: term_penalty}
+      - id: "3.2"
+        text: "При пропуске двух платежей подряд отметка о просрочке передаётся в бюро кредитных историй, а кредитор вправе потребовать досрочного погашения."
+        nodes:
+          - {label: Condition, id: kedr_install_bki, name: "Отметка в кредитной истории", value: "просрочка передаётся в бюро кредитных историй", term: term_credit_history}
+          - {label: Condition, id: kedr_install_early, name: "Требование досрочного погашения", value: "кредитор вправе потребовать вернуть всю сумму", term: term_early}
+events:
+  - {rel: CANCELS, event: ev_missed_payment, target: kedr_install_grace, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: kedr_install_surcharge, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: kedr_install_penalty, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: kedr_install_bki, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: kedr_install_early, section: "3.2"}

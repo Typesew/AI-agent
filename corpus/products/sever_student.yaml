@@ -1,0 +1,41 @@
+# Свободные формулировки (не шаблон), чтобы экстракция не была слишком лёгкой.
+doc_id: sever_student
+bank_id: bank_sever
+bank: Банк «Северный Путь»
+product: Студенческая Северная
+product_term: term_student_card
+doc_type: student_card
+date: 2026-09-01
+aliases: [студенческая северная]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Платить за карту не нужно: обслуживание стоит 0 ₽, а стипендия приходит без всякой комиссии."
+        nodes:
+          - {label: Fee, id: sever_student_service, name: "Обслуживание карты", value: "0 ₽", term: term_service_fee}
+          - {label: Condition, id: sever_student_stipend, name: "Получение стипендии", value: "без комиссии"}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "Переводить внутри банка можно бесплатно — до 300 000 ₽ в месяц."
+        node: {label: Condition, id: sever_student_transfer_limit, name: "Бесплатные переводы", value: "внутри банка до 300 000 ₽ в месяц"}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "Кэшбэк приходит бонусами «Спасибо», и молодёжи доступно сразу 5 категорий на выбор."
+        node: {label: Condition, id: sever_student_cashback, name: "Кэшбэк", value: "бонусы «Спасибо», 5 категорий для молодёжи", term: term_cashback}
+  - number: 4
+    title: Статус и возраст
+    clauses:
+      - id: "4.1"
+        text: "Карта рассчитана на студентов, которым ещё нет 23 лет."
+        node: {label: Condition, id: sever_student_age, name: "Возрастной предел", value: "до 23 лет", term: term_student_card}
+      - id: "4.2"
+        text: "Закончили учёбу или отметили 23-летие? Карта сама превратится в «Северную Карту»: за обслуживание по-прежнему 0 ₽, но категорий кэшбэка станет 3, а не 5."
+        node: {label: Condition, id: sever_student_convert, name: "Перевод на «Северную Карту»", value: "обслуживание остаётся 0 ₽, категорий кэшбэка 3 вместо 5", term: term_service_fee}
+events:
+  - {rel: TRIGGERS, event: ev_student_lost, target: sever_student_convert, section: "4.2"}

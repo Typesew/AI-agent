@@ -1,0 +1,40 @@
+.................................................................2026-10-25 16:02:38.836 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+F2026-10-25 16:02:39.259 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+.2026-10-25 16:02:40.513 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+.2026-10-25 16:02:40.677 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+.
+======================================================================
+FAIL: test_answer_sources_and_graph (tests.test_ui.UITest.test_answer_sources_and_graph)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/alexandra/bank-translator/tests/test_ui.py", line 32, in test_answer_sources_and_graph
+    self.assertIn("Подводные камни", text)
+AssertionError: 'Подводные камни' not found in 'Что отменяет льготный период по карте «Полярная 120»? **Примеры**\n- Что отменяет льготный период по карте «Полярная 120»?\n- Кредит 100 000 ₽ на 2 года под 18%, какая переплата?\n- Какие кредитные карты сохраняют льготный период при снятии наличных?'
+
+----------------------------------------------------------------------
+Ran 69 tests in 43.325s
+
+FAILED (failures=1)
+Продуктов 20, глоссарий 1, extra 14; эталон: узлов 220, связей 403
+Граф g.kuzu: документов 21, узлов 245, связей 443
+  sever_credit#1: узлов 4, связей 8
+  sever_credit#2: узлов 3, связей 9
+  sever_credit#3: узлов 3, связей 9
+  sever_credit#4: узлов 5, связей 8
+  sever_credit#5: узлов 2, связей 5
+  sever_credit#1: узлов 4, связей 8
+  sever_credit#2: узлов 3, связей 9
+  sever_credit#3: узлов 3, связей 9
+  sever_credit#4: узлов 5, связей 8
+  sever_credit#5: узлов 2, связей 5
+  sever_credit#1: узлов 4, связей 8
+  sever_credit#2: узлов 3, связей 9
+  sever_credit#3: узлов 3, связей 9
+  sever_credit#4: узлов 5, связей 8
+  sever_credit#5: узлов 2, связей 5
+  kedr_student#1: узлов 1, связей 2
+  kedr_student#2: узлов 1, связей 2
+  kedr_student#3: узлов 2, связей 4
+  kedr_student#4: узлов 2, связей 6
+Граф graph.kuzu: документов 21, узлов 245, связей 443
+Chroma: 124 чанков, эмбеддер hash, /tmp/tmp5n27ssc7/chroma

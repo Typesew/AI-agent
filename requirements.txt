@@ -1,0 +1,6 @@
+kuzu==0.11.3
+chromadb
+fastmcp
+mcp
+streamlit
+pyyaml

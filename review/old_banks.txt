@@ -1,0 +1,1 @@
+./README.md:136:grep -rniIE "полярн|сирень|каштан|polar|siren|kashtan" . --exclude-dir=.venv --exclude-dir=chroma | grep -viE "полярная 120"

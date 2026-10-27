@@ -1,0 +1,45 @@
+# Свободные формулировки.
+doc_id: opora_student
+bank_id: bank_opora
+bank: Банк «Точка Опоры»
+product: Молодёжная Опорная
+product_term: term_student_card
+doc_type: student_card
+date: 2026-08-15
+aliases: [молодёжная опорная]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Карта ничего не стоит: обслуживание 0 ₽ без всяких условий."
+        node: {label: Fee, id: opora_student_service, name: "Обслуживание карты", value: "0 ₽ без условий", term: term_service_fee}
+      - id: "1.2"
+        text: "Закинуть деньги на карту можно бесплатно — через СБП или банкомат."
+        node: {label: Condition, id: opora_student_topup, name: "Пополнение", value: "бесплатно через СБП и банкоматы", term: term_sbp}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "Наличные: до 500 000 ₽ в месяц в банкоматах банка и от 3 000 до 100 000 ₽ — в любых других."
+        node: {label: Condition, id: opora_student_cash, name: "Снятие наличных", value: "до 500 000 ₽ в месяц в банкоматах банка, 3 000–100 000 ₽ в любых", term: term_cash_withdrawal}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "За покупки возвращается до 15% в 4 категориях плюс 1% на всё остальное."
+        node: {label: Condition, id: opora_student_cashback, name: "Кэшбэк", value: "до 15% в 4 категориях + 1% на всё", term: term_cashback}
+      - id: "3.2"
+        text: "Больше 5 000 ₽ кэшбэка в месяц не получить даже с подпиской Pro, а без неё потолок — 3 000 ₽."
+        node: {label: Condition, id: opora_student_cb_limit, name: "Лимит кэшбэка", value: "5 000 ₽ в месяц с Pro, 3 000 ₽ без подписки", term: term_cashback_limit}
+  - number: 4
+    title: Статус и возраст
+    clauses:
+      - id: "4.1"
+        text: "Оформить карту можно в возрасте от 14 до 22 лет."
+        node: {label: Condition, id: opora_student_age, name: "Возраст", value: "14–22 года", term: term_student_card}
+      - id: "4.2"
+        text: "В 23 года карта автоматически станет «Опорная Black» — и правила будут уже её: не выполняете условия, платите за обслуживание 99 ₽ в месяц."
+        node: {label: Condition, id: opora_student_convert, name: "Перевод на «Опорная Black»", value: "обслуживание 99 ₽ в месяц, если условия «Опорная Black» не выполнены", term: term_service_fee}
+events:
+  - {rel: TRIGGERS, event: ev_student_lost, target: opora_student_convert, section: "4.2"}

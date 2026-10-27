@@ -1,0 +1,81 @@
+doc_id: sever_credit
+bank_id: bank_sever
+bank: Банк «Северный Путь»
+product: Полярная 120
+product_term: term_credit_card
+doc_type: credit_card
+date: 2026-09-01
+aliases: [полярная 120]
+tool_params: {grace_days: 120, grace_mode: from_month_start}
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Кредитный лимит — до 1 000 000 ₽."
+        node: {label: Condition, id: sever_credit_limit, name: "Кредитный лимит", value: "до 1 000 000 ₽", term: term_credit_limit}
+      - id: "1.2"
+        text: "Процентная ставка вне льготного периода — от 49,8% до 59,8% годовых."
+        node: {label: Condition, id: sever_credit_rate, name: "Процентная ставка", value: "49,8–59,8% годовых вне льготного периода", term: term_rate}
+      - id: "1.3"
+        text: "Полная стоимость кредита (ПСК) — от 48,816% до 58,320% годовых."
+        node: {label: Condition, id: sever_credit_psk, name: "ПСК", value: "48,816–58,320% годовых", term: term_psk}
+      - id: "1.4"
+        text: "Обслуживание карты — 0 ₽."
+        node: {label: Fee, id: sever_credit_service, name: "Обслуживание карты", value: "0 ₽", term: term_service_fee}
+  - number: 2
+    title: Льготный период
+    clauses:
+      - id: "2.1"
+        text: "Льготный период — до 120 дней. Отсчёт начинается с 1-го числа месяца, в котором совершена покупка."
+        node: {label: Condition, id: sever_credit_grace, name: "Льготный период", value: "до 120 дней на покупки, отсчёт с 1-го числа месяца покупки", term: term_grace}
+      - id: "2.2"
+        text: "Льготный период не распространяется на: снятие наличных; переводы с карты."
+        nodes:
+          - {label: Exception, id: sever_credit_grace_x_cash, name: "Снятие наличных", of: sever_credit_grace, event: ev_cash}
+          - {label: Exception, id: sever_credit_grace_x_transfer, name: "Переводы с карты", of: sever_credit_grace, event: ev_transfer}
+      - id: "2.3"
+        text: "Если к концу льготного периода долг погашен не полностью, проценты по ставке п. 1.2 начисляются за весь срок с даты покупки."
+      - id: "2.4"
+        text: "При пропуске обязательного платежа льготный период отменяется."
+  - number: 3
+    title: Обслуживание и комиссии
+    clauses:
+      - id: "3.1"
+        text: "Снятие наличных и переводы с карты — комиссия 5,9% + 590 ₽; проценты начисляются с даты операции."
+        nodes:
+          - {label: Fee, id: sever_credit_cash_fee, name: "Комиссия за снятие наличных", value: "5,9% + 590 ₽, проценты с даты операции", term: term_cash_withdrawal}
+          - {label: Fee, id: sever_credit_transfer_fee, name: "Комиссия за перевод с карты", value: "5,9% + 590 ₽, проценты с даты операции", term: term_cc_transfer}
+      - id: "3.2"
+        text: "Подписка «Спасибо Плюс» — 199 ₽ в месяц. Без подписки доступны 3 категории кэшбэка вместо 5."
+        node: {label: Fee, id: sever_credit_subscription, name: "Подписка «Спасибо Плюс»", value: "199 ₽ в месяц; без неё 3 категории кэшбэка вместо 5", term: term_subscription}
+  - number: 4
+    title: Кэшбэк и бонусы
+    clauses:
+      - id: "4.1"
+        text: "Кэшбэк бонусами «Спасибо»: 3 категории на выбор без подписки, 5 категорий с подпиской."
+        node: {label: Condition, id: sever_credit_cashback, name: "Кэшбэк", value: "бонусы «Спасибо»: 3 категории без подписки, 5 с подпиской", term: term_cashback}
+      - id: "4.2"
+        text: "Кэшбэк не начисляется на: категорию «На все покупки» (кэшбэк на все покупки по кредитной карте не предусмотрен); снятие наличных; переводы; оплату ЖКХ."
+        nodes:
+          - {label: Exception, id: sever_credit_cb_x_all, name: "Категория «На все покупки»", of: sever_credit_cashback}
+          - {label: Exception, id: sever_credit_cb_x_cash, name: "Снятие наличных", of: sever_credit_cashback, event: ev_cash}
+          - {label: Exception, id: sever_credit_cb_x_transfer, name: "Переводы", of: sever_credit_cashback, event: ev_transfer}
+          - {label: Exception, id: sever_credit_cb_x_utilities, name: "Оплата ЖКХ", of: sever_credit_cashback}
+  - number: 5
+    title: Минимальный платёж и ответственность
+    clauses:
+      - id: "5.1"
+        text: "Минимальный платёж — до 10% от основного долга, но не менее 500 ₽."
+        node: {label: Condition, id: sever_credit_minpay, name: "Минимальный платёж", value: "до 10% основного долга, не менее 500 ₽", term: term_minpay}
+      - id: "5.2"
+        text: "При пропуске обязательного платежа начисляется неустойка 0,1% в день от просроченной суммы."
+        node: {label: Fee, id: sever_credit_penalty, name: "Неустойка за просрочку", value: "0,1% в день от просроченной суммы", term: term_penalty}
+events:
+  - {rel: CANCELS, event: ev_not_full_repay, target: sever_credit_grace, section: "2.3"}
+  - {rel: TRIGGERS, event: ev_not_full_repay, target: sever_credit_rate, section: "2.3"}
+  - {rel: CANCELS, event: ev_missed_payment, target: sever_credit_grace, section: "2.4"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: sever_credit_penalty, section: "5.2"}
+  - {rel: TRIGGERS, event: ev_cash, target: sever_credit_cash_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_transfer, target: sever_credit_transfer_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_paid_service, target: sever_credit_subscription, section: "3.2"}

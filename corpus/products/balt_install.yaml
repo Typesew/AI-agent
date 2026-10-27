@@ -1,0 +1,43 @@
+doc_id: balt_install
+bank_id: bank_balt
+bank: Банк «Балтийский»
+product: Балтийская Рассрочка
+product_term: term_installment
+doc_type: installment
+date: 2026-09-15
+aliases: [балтийская рассрочка]
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Срок рассрочки — 4 месяца, переплата — 0%."
+        node: {label: Condition, id: balt_install_zero, name: "Рассрочка без переплаты", value: "0% переплаты, срок 4 месяца", term: term_installment}
+      - id: "1.2"
+        text: "Оформление на кассе партнёра через приложение банка."
+        node: {label: Condition, id: balt_install_app, name: "Оформление", value: "на кассе партнёра через приложение", term: term_bnpl}
+      - id: "1.3"
+        text: "Минимальная сумма покупки — 1 000 ₽."
+        node: {label: Condition, id: balt_install_min, name: "Минимальная сумма", value: "1 000 ₽"}
+  - number: 2
+    title: Комиссии
+    clauses:
+      - id: "2.1"
+        text: "Комиссия за оформление рассрочки — 0 ₽."
+        node: {label: Fee, id: balt_install_service, name: "Обслуживание рассрочки", value: "0 ₽", term: term_service_fee}
+  - number: 3
+    title: Просрочка
+    clauses:
+      - id: "3.1"
+        text: "За пропуск платежа — штраф 500 ₽ и неустойка 0,1% в день."
+        nodes:
+          - {label: Fee, id: balt_install_fine, name: "Штраф за пропуск платежа", value: "500 ₽", term: term_fine}
+          - {label: Fee, id: balt_install_penalty, name: "Неустойка за просрочку", value: "0,1% в день", term: term_penalty}
+      - id: "3.2"
+        text: "При пропуске двух платежей подряд условие 0% отменяется, на остаток начисляется 29,9% годовых."
+        node: {label: Condition, id: balt_install_after, name: "Ставка после отмены 0%", value: "29,9% годовых на остаток", term: term_rate}
+events:
+  - {rel: TRIGGERS, event: ev_missed_payment, target: balt_install_fine, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: balt_install_penalty, section: "3.1"}
+  - {rel: CANCELS, event: ev_missed_two, target: balt_install_zero, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: balt_install_after, section: "3.2"}

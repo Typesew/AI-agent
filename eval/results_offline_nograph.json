@@ -1,0 +1,278 @@
+{
+ "mode": "offline_nograph",
+ "passed": 17,
+ "total": 20,
+ "results": [
+  {
+   "id": 1,
+   "type": "rag",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "case_cash_in_grace.md",
+    "case_merid_extension.md",
+    "glossary.md",
+    "reg_grace.md"
+   ]
+  },
+  {
+   "id": 2,
+   "type": "graph",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "case_cash_in_grace.md",
+    "case_missed_minpay.md",
+    "sever_credit.md"
+   ]
+  },
+  {
+   "id": 3,
+   "type": "graph",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "sever_credit.md"
+   ]
+  },
+  {
+   "id": 4,
+   "type": "cross",
+   "passed": false,
+   "problems": [
+    "нет фактов: ['сверх 50 000 ₽', 'Меридиан 150']",
+    "нет источников: ['sever_credit.md', 'merid_credit.md', 'kedr_credit.md']"
+   ],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "balt_credit.md",
+    "case_cash_in_grace.md",
+    "opora_credit.md"
+   ]
+  },
+  {
+   "id": 5,
+   "type": "cross",
+   "passed": false,
+   "problems": [
+    "нет фактов: ['Плати частями', '39,9%', 'Рассрочка по кнопке', 'Кедр Рассрочка', 'Доплата']",
+    "нет источников: ['sever_install.md', 'opora_install.md', 'kedr_install.md']"
+   ],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "balt_install.md",
+    "case_missed_two.md",
+    "merid_install.md",
+    "reg_installment_vs_credit.md",
+    "reg_overdue.md"
+   ]
+  },
+  {
+   "id": 6,
+   "type": "compare",
+   "passed": true,
+   "problems": [],
+   "route": "both",
+   "tools": [
+    "compare_products"
+   ],
+   "sources": [
+    "case_cash_in_grace.md",
+    "case_limit_exceeded.md",
+    "merid_credit.md",
+    "opora_credit.md"
+   ]
+  },
+  {
+   "id": 7,
+   "type": "graph",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "case_graduate.md",
+    "case_promo_end.md",
+    "opora_debit.md"
+   ]
+  },
+  {
+   "id": 8,
+   "type": "graph",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "case_graduate.md",
+    "kedr_student.md"
+   ]
+  },
+  {
+   "id": 9,
+   "type": "cross",
+   "passed": false,
+   "problems": [
+    "нет источников: ['opora_student.md']"
+   ],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "balt_student.md",
+    "case_graduate.md",
+    "kedr_student.md",
+    "merid_student.md",
+    "sever_student.md"
+   ]
+  },
+  {
+   "id": 10,
+   "type": "tool",
+   "passed": true,
+   "problems": [],
+   "route": "both",
+   "tools": [
+    "loan_calculator"
+   ],
+   "sources": [
+    "case_missed_two.md",
+    "case_subscription.md",
+    "merid_install.md"
+   ]
+  },
+  {
+   "id": 11,
+   "type": "tool",
+   "passed": true,
+   "problems": [],
+   "route": "tool",
+   "tools": [
+    "loan_calculator"
+   ],
+   "sources": []
+  },
+  {
+   "id": 12,
+   "type": "tool",
+   "passed": true,
+   "problems": [],
+   "route": "both",
+   "tools": [
+    "grace_period_calc"
+   ],
+   "sources": [
+    "case_missed_minpay.md",
+    "sever_credit.md"
+   ]
+  },
+  {
+   "id": 13,
+   "type": "tool",
+   "passed": true,
+   "problems": [],
+   "route": "both",
+   "tools": [
+    "grace_period_calc"
+   ],
+   "sources": [
+    "case_merid_extension.md",
+    "merid_credit.md"
+   ]
+  },
+  {
+   "id": 14,
+   "type": "rag_graph",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "case_missed_two.md",
+    "sever_install.md"
+   ]
+  },
+  {
+   "id": 15,
+   "type": "compare",
+   "passed": true,
+   "problems": [],
+   "route": "both",
+   "tools": [
+    "compare_products"
+   ],
+   "sources": [
+    "balt_debit.md",
+    "case_graduate.md",
+    "opora_debit.md",
+    "sever_debit.md"
+   ]
+  },
+  {
+   "id": 16,
+   "type": "rag",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "glossary.md",
+    "reg_psk.md",
+    "reg_schedule.md"
+   ]
+  },
+  {
+   "id": 17,
+   "type": "rag",
+   "passed": true,
+   "problems": [],
+   "route": "rag",
+   "tools": [],
+   "sources": [
+    "kedr_install.md",
+    "reg_installment_vs_credit.md",
+    "reg_schedule.md"
+   ]
+  },
+  {
+   "id": 18,
+   "type": "tool",
+   "passed": true,
+   "problems": [],
+   "route": "both",
+   "tools": [
+    "save_summary"
+   ],
+   "sources": [
+    "case_missed_minpay.md",
+    "case_subscription.md",
+    "sever_credit.md"
+   ]
+  },
+  {
+   "id": 19,
+   "type": "refuse",
+   "passed": true,
+   "problems": [],
+   "route": "refuse",
+   "tools": [],
+   "sources": []
+  },
+  {
+   "id": 20,
+   "type": "nodata",
+   "passed": true,
+   "problems": [],
+   "route": "nodata",
+   "tools": [],
+   "sources": []
+  }
+ ]
+}

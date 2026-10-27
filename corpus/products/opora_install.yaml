@@ -1,0 +1,46 @@
+doc_id: opora_install
+bank_id: bank_opora
+bank: Банк «Точка Опоры»
+product: Рассрочка по кнопке
+product_term: term_installment
+doc_type: installment
+date: 2026-08-15
+aliases: [рассрочка по кнопке]
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Сумма рассрочки — от 500 ₽ до лимита: 80 000 ₽ в месяц без подписки, больше — с подпиской Pro."
+        node: {label: Condition, id: opora_install_amount, name: "Сумма рассрочки", value: "от 500 ₽ до 80 000 ₽ в месяц без подписки, больше с подпиской Pro", term: term_btn_installment}
+      - id: "1.2"
+        text: "Срок рассрочки — до 24 месяцев."
+        node: {label: Condition, id: opora_install_term, name: "Срок рассрочки", value: "до 24 месяцев"}
+      - id: "1.3"
+        text: "Проценты банк не начисляет (0%), но берёт комиссию; её размер виден перед подтверждением."
+        node: {label: Condition, id: opora_install_zero, name: "Рассрочка без процентов", value: "0% от банка, но с комиссией, видна до подтверждения", term: term_installment}
+      - id: "1.4"
+        text: "В рассрочку можно перевести и переводы с кредитной карты."
+        node: {label: Condition, id: opora_install_transfers, name: "Рассрочка на переводы", value: "в рассрочку можно перевести переводы с кредитной карты", term: term_cc_transfer}
+  - number: 2
+    title: Комиссии
+    clauses:
+      - id: "2.1"
+        text: "Комиссия за рассрочку фиксированная, зависит от суммы и срока и показывается до подтверждения."
+        node: {label: Fee, id: opora_install_commission, name: "Комиссия за рассрочку", value: "фиксированная, зависит от суммы и срока, видна до подтверждения"}
+  - number: 3
+    title: Просрочка
+    clauses:
+      - id: "3.1"
+        text: "За пропуск платежа — штраф 590 ₽ и неустойка 0,1% в день."
+        nodes:
+          - {label: Fee, id: opora_install_fine, name: "Штраф за пропуск платежа", value: "590 ₽", term: term_fine}
+          - {label: Fee, id: opora_install_penalty, name: "Неустойка за просрочку", value: "0,1% в день", term: term_penalty}
+      - id: "3.2"
+        text: "При пропуске двух платежей подряд комиссия не возвращается, а остаток переходит в задолженность по кредитной карте со ставкой вне льготного периода."
+        node: {label: Condition, id: opora_install_after, name: "Перевод остатка в долг по кредитной карте", value: "остаток под ставку кредитной карты вне льготного периода, комиссия не возвращается", term: term_rate}
+events:
+  - {rel: TRIGGERS, event: ev_missed_payment, target: opora_install_fine, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: opora_install_penalty, section: "3.1"}
+  - {rel: CANCELS, event: ev_missed_two, target: opora_install_zero, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_two, target: opora_install_after, section: "3.2"}

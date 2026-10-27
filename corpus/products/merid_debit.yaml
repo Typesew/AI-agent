@@ -1,0 +1,38 @@
+# Свободные формулировки.
+doc_id: merid_debit
+bank_id: bank_merid
+bank: Банк «Меридиан»
+product: Меридиан Карта
+product_term: term_debit_card
+doc_type: debit_card
+date: 2026-10-01
+aliases: [меридиан карта]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "За обслуживание банк ничего не берёт — 0 ₽."
+        node: {label: Fee, id: merid_debit_service, name: "Обслуживание карты", value: "0 ₽", term: term_service_fee}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "В банкоматах-партнёрах наличные выдаются без комиссии, в остальных придётся отдать 1%, но не меньше 100 ₽."
+        node: {label: Fee, id: merid_debit_cash_fee, name: "Комиссия за снятие наличных", value: "0 ₽ в банкоматах-партнёрах, в остальных 1%, минимум 100 ₽", term: term_cash_withdrawal}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "Возвращаем до 5% в категориях, которые вы выбрали, и 1% со всего остального."
+        node: {label: Condition, id: merid_debit_cashback, name: "Кэшбэк", value: "до 5% в выбранных категориях, 1% на всё", term: term_cashback}
+      - id: "3.2"
+        text: "На остаток до 300 000 ₽ начисляем до 8% годовых."
+        node: {label: Condition, id: merid_debit_balance, name: "Процент на остаток", value: "до 8% годовых на остаток до 300 000 ₽", term: term_balance_interest}
+      - id: "3.3"
+        text: "Кэшбэк не приходит за переводы, за снятие наличных и за оплату ЖКХ."
+        nodes:
+          - {label: Exception, id: merid_debit_cb_x_transfer, name: "Переводы", of: merid_debit_cashback, event: ev_transfer}
+          - {label: Exception, id: merid_debit_cb_x_cash, name: "Снятие наличных", of: merid_debit_cashback, event: ev_cash}
+          - {label: Exception, id: merid_debit_cb_x_utilities, name: "Оплата ЖКХ", of: merid_debit_cashback}
+events: []

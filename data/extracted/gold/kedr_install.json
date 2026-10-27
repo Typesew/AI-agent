@@ -1,0 +1,230 @@
+{
+ "nodes": [
+  {
+   "id": "kedr_install_limit",
+   "label": "Condition",
+   "name": "Лимит рассрочки",
+   "value": "до 500 000 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "kedr_install_term",
+   "label": "Condition",
+   "name": "Срок рассрочки",
+   "value": "6, 12 или 24 месяца",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "kedr_install_grace",
+   "label": "Condition",
+   "name": "Льготный период",
+   "value": "до 5 недель без переплаты, потом доплата",
+   "aliases": "",
+   "section": "1.3"
+  },
+  {
+   "id": "kedr_install_nominpay",
+   "label": "Condition",
+   "name": "Минимальный платёж",
+   "value": "отсутствует",
+   "aliases": "",
+   "section": "1.4"
+  },
+  {
+   "id": "kedr_install_market",
+   "label": "Condition",
+   "name": "Где работает",
+   "value": "только товары маркетплейса-партнёра",
+   "aliases": "",
+   "section": "1.5"
+  },
+  {
+   "id": "kedr_install_mfo",
+   "label": "Condition",
+   "name": "Отражение в кредитной истории",
+   "value": "как заём МКК",
+   "aliases": "",
+   "section": "1.6"
+  },
+  {
+   "id": "kedr_install_surcharge",
+   "label": "Fee",
+   "name": "Доплата",
+   "value": "по условиям покупки, если не погасить в льготный период",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "kedr_install_penalty",
+   "label": "Fee",
+   "name": "Неустойка за просрочку",
+   "value": "0,1% в день",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "kedr_install_bki",
+   "label": "Condition",
+   "name": "Отметка в кредитной истории",
+   "value": "просрочка передаётся в бюро кредитных историй",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "kedr_install_early",
+   "label": "Condition",
+   "name": "Требование досрочного погашения",
+   "value": "кредитор вправе потребовать вернуть всю сумму",
+   "aliases": "",
+   "section": "3.2"
+  }
+ ],
+ "edges": [
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_limit",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_limit",
+   "term_credit_limit",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_term",
+   "1.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_grace",
+   "1.3"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_grace",
+   "term_grace",
+   "1.3"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_nominpay",
+   "1.4"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_nominpay",
+   "term_minpay",
+   "1.4"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_market",
+   "1.5"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_market",
+   "term_bnpl",
+   "1.5"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_mfo",
+   "1.6"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_mfo",
+   "term_mfo",
+   "1.6"
+  ],
+  [
+   "CHARGES",
+   "kedr_install",
+   "kedr_install_surcharge",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_surcharge",
+   "term_overdue",
+   "2.1"
+  ],
+  [
+   "CHARGES",
+   "kedr_install",
+   "kedr_install_penalty",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_penalty",
+   "term_penalty",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_bki",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_bki",
+   "term_credit_history",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_install",
+   "kedr_install_early",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_install_early",
+   "term_early",
+   "3.2"
+  ],
+  [
+   "CANCELS",
+   "ev_missed_payment",
+   "kedr_install_grace",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "kedr_install_surcharge",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "kedr_install_penalty",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_two",
+   "kedr_install_bki",
+   "3.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_two",
+   "kedr_install_early",
+   "3.2"
+  ]
+ ]
+}

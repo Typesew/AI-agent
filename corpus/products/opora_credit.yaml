@@ -1,0 +1,72 @@
+# Свободные формулировки.
+doc_id: opora_credit
+bank_id: bank_opora
+bank: Банк «Точка Опоры»
+product: Опорная 55
+product_term: term_credit_card
+doc_type: credit_card
+date: 2026-08-15
+aliases: [опорная 55]
+tool_params: {grace_days: 55, grace_mode: from_purchase}
+sections:
+  - number: 1
+    title: Общие условия
+    clauses:
+      - id: "1.1"
+        text: "Банк готов дать до 1 000 000 ₽ кредитного лимита."
+        node: {label: Condition, id: opora_credit_limit, name: "Кредитный лимит", value: "до 1 000 000 ₽", term: term_credit_limit}
+      - id: "1.2"
+        text: "Ставка — от 29,9% до 59,9% годовых, а ПСК укладывается в диапазон 29,855–58,275% годовых."
+        nodes:
+          - {label: Condition, id: opora_credit_rate, name: "Процентная ставка", value: "29,9–59,9% годовых", term: term_rate}
+          - {label: Condition, id: opora_credit_psk, name: "ПСК", value: "29,855–58,275% годовых", term: term_psk}
+      - id: "1.3"
+        text: "Пока действует акция «0% навсегда», обслуживание обходится в 0 ₽."
+        node: {label: Fee, id: opora_credit_service, name: "Обслуживание карты", value: "0 ₽ по акции «0% навсегда»", term: term_service_fee}
+      - id: "1.4"
+        text: "Если акцию свернут, за обслуживание придётся платить 590 ₽ в месяц; банк обещает предупредить за 30 дней."
+        node: {label: Fee, id: opora_credit_service_after, name: "Обслуживание после окончания акции", value: "590 ₽ в месяц, уведомление за 30 дней", term: term_service_fee}
+  - number: 2
+    title: Льготный период
+    clauses:
+      - id: "2.1"
+        text: "До 55 дней можно не платить проценты — за покупки, а также за бесплатные переводы и снятие в рамках лимитов."
+        node: {label: Condition, id: opora_credit_grace, name: "Льготный период", value: "до 55 дней на покупки и на бесплатные переводы и снятие в пределах 50 000 ₽ в месяц", term: term_grace}
+      - id: "2.2"
+        text: "Снятие наличных и переводы через сервисы банка попадают в льготный период лишь в пределах 50 000 ₽ в месяц; всё, что сверх лимита, идёт без льготного периода."
+        node: {label: Exception, id: opora_credit_grace_x_over, name: "Снятие наличных и переводы сверх 50 000 ₽ в месяц", of: opora_credit_grace, event: ev_limit_exceeded}
+      - id: "2.3"
+        text: "Забыли внести минимальный платёж — льготный период по текущей задолженности сгорает."
+  - number: 3
+    title: Обслуживание и комиссии
+    clauses:
+      - id: "3.1"
+        text: "Снять наличные или перевести деньги через сервисы банка можно бесплатно до 50 000 ₽ в месяц; сверх этого — 4,9% + 490 ₽."
+        nodes:
+          - {label: Fee, id: opora_credit_cash_fee, name: "Комиссия за снятие наличных", value: "0 ₽ до 50 000 ₽ в месяц, сверх — 4,9% + 490 ₽", term: term_cash_withdrawal}
+          - {label: Fee, id: opora_credit_transfer_fee, name: "Комиссия за перевод с карты", value: "0 ₽ до 50 000 ₽ в месяц, сверх — 4,9% + 490 ₽", term: term_cc_transfer}
+      - id: "3.2"
+        text: "Уведомления об операциях стоят 59 ₽ в месяц с подпиской и 99 ₽ в месяц без неё."
+        node: {label: Fee, id: opora_credit_notify, name: "Уведомления об операциях", value: "59 ₽ в месяц с подпиской, 99 ₽ в месяц без неё", term: term_subscription}
+      - id: "3.3"
+        text: "Внутри карты есть «Рассрочка по кнопке»: покупку от 500 ₽ можно разбить на срок до 24 месяцев. Процентов банк не берёт, но комиссию — берёт."
+        node: {label: Condition, id: opora_credit_btn, name: "Рассрочка по кнопке", value: "от 500 ₽, до 24 месяцев, 0% от банка, но с комиссией", term: term_btn_installment}
+  - number: 4
+    title: Минимальный платёж и ответственность
+    clauses:
+      - id: "4.1"
+        text: "Минимальный платёж считается индивидуально: не больше 14% долга и не меньше 600 ₽."
+        node: {label: Condition, id: opora_credit_minpay, name: "Минимальный платёж", value: "индивидуально, до 14% долга, не менее 600 ₽", term: term_minpay}
+      - id: "4.2"
+        text: "Пропуск минимального платежа обойдётся в штраф 590 ₽ плюс неустойку 20% годовых."
+        nodes:
+          - {label: Fee, id: opora_credit_fine, name: "Штраф за пропуск платежа", value: "590 ₽", term: term_fine}
+          - {label: Fee, id: opora_credit_penalty, name: "Неустойка за просрочку", value: "20% годовых", term: term_penalty}
+events:
+  - {rel: TRIGGERS, event: ev_promo_end, target: opora_credit_service_after, section: "1.4"}
+  - {rel: CANCELS, event: ev_missed_payment, target: opora_credit_grace, section: "2.3"}
+  - {rel: TRIGGERS, event: ev_limit_exceeded, target: opora_credit_cash_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_limit_exceeded, target: opora_credit_transfer_fee, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_paid_service, target: opora_credit_notify, section: "3.2"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: opora_credit_fine, section: "4.2"}
+  - {rel: TRIGGERS, event: ev_missed_payment, target: opora_credit_penalty, section: "4.2"}

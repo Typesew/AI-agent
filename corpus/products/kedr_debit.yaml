@@ -1,0 +1,49 @@
+doc_id: kedr_debit
+bank_id: bank_kedr
+bank: Банк «Кедр»
+product: Кедр Карта
+product_term: term_debit_card
+doc_type: debit_card
+date: 2026-07-20
+aliases: [кедр карта]
+sections:
+  - number: 1
+    title: Обслуживание
+    clauses:
+      - id: "1.1"
+        text: "Обслуживание и выпуск карты — 0 ₽."
+        node: {label: Fee, id: kedr_debit_service, name: "Обслуживание карты", value: "0 ₽, выпуск 0 ₽", term: term_service_fee}
+  - number: 2
+    title: Переводы и снятие
+    clauses:
+      - id: "2.1"
+        text: "Снятие наличных без комиссии в банкоматах банка-партнёра."
+        node: {label: Condition, id: kedr_debit_cash, name: "Снятие наличных", value: "без комиссии в банкоматах банка-партнёра", term: term_cash_withdrawal}
+      - id: "2.2"
+        text: "Переводы через СБП — бесплатно."
+        node: {label: Condition, id: kedr_debit_sbp, name: "Переводы по СБП", value: "бесплатно", term: term_sbp}
+  - number: 3
+    title: Кэшбэк и проценты
+    clauses:
+      - id: "3.1"
+        text: "Кэшбэк — 1% на всё и до 25% в 4 категориях. Пятая категория доступна с подпиской за 199 ₽ в месяц или 1 790 ₽ в год."
+        nodes:
+          - {label: Condition, id: kedr_debit_cashback, name: "Кэшбэк", value: "1% на всё + до 25% в 4 категориях", term: term_cashback}
+          - {label: Fee, id: kedr_debit_subscription, name: "Подписка (5-я категория)", value: "199 ₽ в месяц или 1 790 ₽ в год", term: term_subscription}
+      - id: "3.2"
+        text: "Лимит кэшбэка — 3 000 ₽ в месяц, из них не более 1 500 ₽ в повышенных категориях."
+        node: {label: Condition, id: kedr_debit_cb_limit, name: "Лимит кэшбэка", value: "3 000 ₽ в месяц, из них 1 500 ₽ в повышенных категориях", term: term_cashback_limit}
+      - id: "3.3"
+        text: "Процент на остаток — до 15,1% годовых по промо, базовая ставка — 7% годовых. Промо действует 3 месяца, затем ставка 7%."
+        nodes:
+          - {label: Condition, id: kedr_debit_balance, name: "Процент на остаток", value: "до 15,1% годовых по промо 3 месяца, базовая 7%", term: term_balance_interest}
+          - {label: Condition, id: kedr_debit_balance_after, name: "Ставка после промо", value: "7% годовых", term: term_balance_interest}
+      - id: "3.4"
+        text: "Кэшбэк не начисляется на: переводы; снятие наличных; оплату ЖКХ."
+        nodes:
+          - {label: Exception, id: kedr_debit_cb_x_transfer, name: "Переводы", of: kedr_debit_cashback, event: ev_transfer}
+          - {label: Exception, id: kedr_debit_cb_x_cash, name: "Снятие наличных", of: kedr_debit_cashback, event: ev_cash}
+          - {label: Exception, id: kedr_debit_cb_x_utilities, name: "Оплата ЖКХ", of: kedr_debit_cashback}
+events:
+  - {rel: TRIGGERS, event: ev_paid_service, target: kedr_debit_subscription, section: "3.1"}
+  - {rel: TRIGGERS, event: ev_promo_end, target: kedr_debit_balance_after, section: "3.3"}

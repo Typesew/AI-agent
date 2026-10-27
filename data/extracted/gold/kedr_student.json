@@ -1,0 +1,138 @@
+{
+ "nodes": [
+  {
+   "id": "kedr_student_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "kedr_student_sbp",
+   "label": "Condition",
+   "name": "Переводы по СБП",
+   "value": "бесплатно",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "kedr_student_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "1% на всё + до 25% в 4 категориях",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "kedr_student_discount",
+   "label": "Condition",
+   "name": "Скидка у партнёра",
+   "value": "до 30% на товары с зелёным ценником",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "kedr_student_age",
+   "label": "Condition",
+   "name": "Возрастной предел",
+   "value": "до 25 лет",
+   "aliases": "",
+   "section": "4.1"
+  },
+  {
+   "id": "kedr_student_convert",
+   "label": "Condition",
+   "name": "Перевод на «Кедр Карта»",
+   "value": "обслуживание 0 ₽, скидка у партнёра пропадает",
+   "aliases": "",
+   "section": "4.2"
+  }
+ ],
+ "edges": [
+  [
+   "CHARGES",
+   "kedr_student",
+   "kedr_student_service",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_student_service",
+   "term_service_fee",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_student",
+   "kedr_student_sbp",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_student_sbp",
+   "term_sbp",
+   "2.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_student",
+   "kedr_student_cashback",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_student_cashback",
+   "term_cashback",
+   "3.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_student",
+   "kedr_student_discount",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_student_discount",
+   "term_loyalty",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_student",
+   "kedr_student_age",
+   "4.1"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_student_age",
+   "term_student_card",
+   "4.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "kedr_student",
+   "kedr_student_convert",
+   "4.2"
+  ],
+  [
+   "DEFINED_AS",
+   "kedr_student_convert",
+   "term_service_fee",
+   "4.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_student_lost",
+   "kedr_student_convert",
+   "4.2"
+  ],
+  [
+   "CANCELS",
+   "ev_student_lost",
+   "kedr_student_discount",
+   "4.2"
+  ]
+ ]
+}

@@ -1,0 +1,376 @@
+{
+ "nodes": [
+  {
+   "id": "sever_credit_limit",
+   "label": "Condition",
+   "name": "Кредитный лимит",
+   "value": "до 1 000 000 ₽",
+   "aliases": "",
+   "section": "1.1"
+  },
+  {
+   "id": "sever_credit_rate",
+   "label": "Condition",
+   "name": "Процентная ставка",
+   "value": "49,8–59,8% годовых вне льготного периода",
+   "aliases": "",
+   "section": "1.2"
+  },
+  {
+   "id": "sever_credit_psk",
+   "label": "Condition",
+   "name": "ПСК",
+   "value": "48,816–58,320% годовых",
+   "aliases": "",
+   "section": "1.3"
+  },
+  {
+   "id": "sever_credit_service",
+   "label": "Fee",
+   "name": "Обслуживание карты",
+   "value": "0 ₽",
+   "aliases": "",
+   "section": "1.4"
+  },
+  {
+   "id": "sever_credit_grace",
+   "label": "Condition",
+   "name": "Льготный период",
+   "value": "до 120 дней на покупки, отсчёт с 1-го числа месяца покупки",
+   "aliases": "",
+   "section": "2.1"
+  },
+  {
+   "id": "sever_credit_grace_x_cash",
+   "label": "Exception",
+   "name": "Снятие наличных",
+   "value": "",
+   "aliases": "",
+   "section": "2.2"
+  },
+  {
+   "id": "sever_credit_grace_x_transfer",
+   "label": "Exception",
+   "name": "Переводы с карты",
+   "value": "",
+   "aliases": "",
+   "section": "2.2"
+  },
+  {
+   "id": "sever_credit_cash_fee",
+   "label": "Fee",
+   "name": "Комиссия за снятие наличных",
+   "value": "5,9% + 590 ₽, проценты с даты операции",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "sever_credit_transfer_fee",
+   "label": "Fee",
+   "name": "Комиссия за перевод с карты",
+   "value": "5,9% + 590 ₽, проценты с даты операции",
+   "aliases": "",
+   "section": "3.1"
+  },
+  {
+   "id": "sever_credit_subscription",
+   "label": "Fee",
+   "name": "Подписка «Спасибо Плюс»",
+   "value": "199 ₽ в месяц; без неё 3 категории кэшбэка вместо 5",
+   "aliases": "",
+   "section": "3.2"
+  },
+  {
+   "id": "sever_credit_cashback",
+   "label": "Condition",
+   "name": "Кэшбэк",
+   "value": "бонусы «Спасибо»: 3 категории без подписки, 5 с подпиской",
+   "aliases": "",
+   "section": "4.1"
+  },
+  {
+   "id": "sever_credit_cb_x_all",
+   "label": "Exception",
+   "name": "Категория «На все покупки»",
+   "value": "",
+   "aliases": "",
+   "section": "4.2"
+  },
+  {
+   "id": "sever_credit_cb_x_cash",
+   "label": "Exception",
+   "name": "Снятие наличных",
+   "value": "",
+   "aliases": "",
+   "section": "4.2"
+  },
+  {
+   "id": "sever_credit_cb_x_transfer",
+   "label": "Exception",
+   "name": "Переводы",
+   "value": "",
+   "aliases": "",
+   "section": "4.2"
+  },
+  {
+   "id": "sever_credit_cb_x_utilities",
+   "label": "Exception",
+   "name": "Оплата ЖКХ",
+   "value": "",
+   "aliases": "",
+   "section": "4.2"
+  },
+  {
+   "id": "sever_credit_minpay",
+   "label": "Condition",
+   "name": "Минимальный платёж",
+   "value": "до 10% основного долга, не менее 500 ₽",
+   "aliases": "",
+   "section": "5.1"
+  },
+  {
+   "id": "sever_credit_penalty",
+   "label": "Fee",
+   "name": "Неустойка за просрочку",
+   "value": "0,1% в день от просроченной суммы",
+   "aliases": "",
+   "section": "5.2"
+  }
+ ],
+ "edges": [
+  [
+   "HAS_CONDITION",
+   "sever_credit",
+   "sever_credit_limit",
+   "1.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_limit",
+   "term_credit_limit",
+   "1.1"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_credit",
+   "sever_credit_rate",
+   "1.2"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_rate",
+   "term_rate",
+   "1.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_credit",
+   "sever_credit_psk",
+   "1.3"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_psk",
+   "term_psk",
+   "1.3"
+  ],
+  [
+   "CHARGES",
+   "sever_credit",
+   "sever_credit_service",
+   "1.4"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_service",
+   "term_service_fee",
+   "1.4"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_credit",
+   "sever_credit_grace",
+   "2.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_grace",
+   "term_grace",
+   "2.1"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "sever_credit_grace",
+   "sever_credit_grace_x_cash",
+   "2.2"
+  ],
+  [
+   "APPLIES_TO",
+   "sever_credit_grace_x_cash",
+   "ev_cash",
+   "2.2"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "sever_credit_grace",
+   "sever_credit_grace_x_transfer",
+   "2.2"
+  ],
+  [
+   "APPLIES_TO",
+   "sever_credit_grace_x_transfer",
+   "ev_transfer",
+   "2.2"
+  ],
+  [
+   "CHARGES",
+   "sever_credit",
+   "sever_credit_cash_fee",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_cash_fee",
+   "term_cash_withdrawal",
+   "3.1"
+  ],
+  [
+   "CHARGES",
+   "sever_credit",
+   "sever_credit_transfer_fee",
+   "3.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_transfer_fee",
+   "term_cc_transfer",
+   "3.1"
+  ],
+  [
+   "CHARGES",
+   "sever_credit",
+   "sever_credit_subscription",
+   "3.2"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_subscription",
+   "term_subscription",
+   "3.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_credit",
+   "sever_credit_cashback",
+   "4.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_cashback",
+   "term_cashback",
+   "4.1"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "sever_credit_cashback",
+   "sever_credit_cb_x_all",
+   "4.2"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "sever_credit_cashback",
+   "sever_credit_cb_x_cash",
+   "4.2"
+  ],
+  [
+   "APPLIES_TO",
+   "sever_credit_cb_x_cash",
+   "ev_cash",
+   "4.2"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "sever_credit_cashback",
+   "sever_credit_cb_x_transfer",
+   "4.2"
+  ],
+  [
+   "APPLIES_TO",
+   "sever_credit_cb_x_transfer",
+   "ev_transfer",
+   "4.2"
+  ],
+  [
+   "HAS_EXCEPTION",
+   "sever_credit_cashback",
+   "sever_credit_cb_x_utilities",
+   "4.2"
+  ],
+  [
+   "HAS_CONDITION",
+   "sever_credit",
+   "sever_credit_minpay",
+   "5.1"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_minpay",
+   "term_minpay",
+   "5.1"
+  ],
+  [
+   "CHARGES",
+   "sever_credit",
+   "sever_credit_penalty",
+   "5.2"
+  ],
+  [
+   "DEFINED_AS",
+   "sever_credit_penalty",
+   "term_penalty",
+   "5.2"
+  ],
+  [
+   "CANCELS",
+   "ev_not_full_repay",
+   "sever_credit_grace",
+   "2.3"
+  ],
+  [
+   "TRIGGERS",
+   "ev_not_full_repay",
+   "sever_credit_rate",
+   "2.3"
+  ],
+  [
+   "CANCELS",
+   "ev_missed_payment",
+   "sever_credit_grace",
+   "2.4"
+  ],
+  [
+   "TRIGGERS",
+   "ev_missed_payment",
+   "sever_credit_penalty",
+   "5.2"
+  ],
+  [
+   "TRIGGERS",
+   "ev_cash",
+   "sever_credit_cash_fee",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_transfer",
+   "sever_credit_transfer_fee",
+   "3.1"
+  ],
+  [
+   "TRIGGERS",
+   "ev_paid_service",
+   "sever_credit_subscription",
+   "3.2"
+  ]
+ ]
+}

@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+data/chroma/
+data/graph.kuzu*
+data/extracted/llm/
+data/summaries/*
+!data/summaries/.gitkeep
+data/mcp_server.log
+data/extracted/llm_raw/

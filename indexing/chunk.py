@@ -74,6 +74,22 @@ def all_docs() -> list[Path]:
     return sorted(RAW_DIR.glob("*.md"))
 
 
+def clauses(path: Path) -> list[dict]:
+    """Пункты договора («2.2. …») — единица работы классификатора извлечения."""
+    meta, body = parse_doc(path)
+    out, section = [], ("", "")
+    for line in body.splitlines():
+        m = SECTION_RE.match(line)
+        if m:
+            section = (m.group(1), m.group(2))
+            continue
+        m = re.match(r"^(\d+\.\d+)\.\s+(.*)$", line.strip())
+        if m:
+            out.append({"id": m.group(1), "text": m.group(2), "section": section[0], "section_title": section[1],
+                        "doc_id": meta["doc_id"]})
+    return out
+
+
 if __name__ == "__main__":
     for path in all_docs():
         for chunk in chunk_doc(path):

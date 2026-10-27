@@ -3,6 +3,8 @@
     python -m indexing.extract_llm                     # все документы
     python -m indexing.extract_llm --only sever_credit # один документ
     python -m indexing.extract_llm --force             # заново, даже если файл продукта уже есть
+    python -m indexing.extract_llm --mode classify --only balt_credit sever_install   # классификация пунктов
+    python -m eval.eval_extraction --pred data/extracted/llm_classify
     python -m indexing.build_graph --source llm        # затем загрузить в граф
     python -m eval.eval_extraction                     # и сравнить с эталоном
 
@@ -14,15 +16,18 @@ import argparse
 import json
 import re
 import shutil
+import time
 from pathlib import Path
 
 from indexing.chunk import all_docs, chunk_doc, parse_doc
+from indexing.classify_clauses import ClauseClassifier
 from indexing.schema import EXTRACTED_LABELS, REL_TYPES
 from rag import llm
 
 ROOT = Path(__file__).resolve().parent.parent
 GOLD_DIR = ROOT / "data" / "extracted" / "gold"
 OUT_DIR = ROOT / "data" / "extracted" / "llm"
+CLASSIFY_OUT_DIR = ROOT / "data" / "extracted" / "llm_classify"
 # Сырые ответы модели по разделам: постобработку можно менять и пересчитывать
 # (--reuse-raw) без новых часов генерации на CPU.
 RAW_DIR_LLM = ROOT / "data" / "extracted" / "llm_raw"
@@ -188,7 +193,9 @@ def extract_doc(path: Path, catalog: dict[str, dict], model: str, use_cache: boo
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default=llm.DEFAULT_MODEL)
-    parser.add_argument("--only", help="doc_id одного документа")
+    parser.add_argument("--mode", choices=["free", "classify"], default="free",
+                        help="free — модель пишет узлы и связи сама; classify — выбирает из перечислений по пунктам")
+    parser.add_argument("--only", nargs="*", help="doc_id одного или нескольких документов")
     parser.add_argument("--force", action="store_true", help="переизвлечь и уже готовые продукты")
     parser.add_argument("--reuse-raw", action="store_true",
                         help="не звать модель, если сырой ответ раздела уже сохранён (пересчёт постобработки)")
@@ -196,22 +203,33 @@ def main():
     if not llm.available() and not args.reuse_raw:
         parser.error(f"Ollama недоступен по {llm.OLLAMA_URL}")
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    shutil.copy(GOLD_DIR / "glossary.json", OUT_DIR / "glossary.json")
+    out_dir = CLASSIFY_OUT_DIR if args.mode == "classify" else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy(GOLD_DIR / "glossary.json", out_dir / "glossary.json")
     glossary = json.loads((GOLD_DIR / "glossary.json").read_text(encoding="utf-8"))
     catalog = {n["id"]: n for n in glossary["nodes"]}
 
     failed_total = []
     for path in all_docs():
         meta, _ = parse_doc(path)
-        if meta["doc_type"] in SKIP_TYPES or (args.only and meta["doc_id"] != args.only):
+        if meta["doc_type"] in SKIP_TYPES or (args.only and meta["doc_id"] not in args.only):
             continue
-        out = OUT_DIR / f"{meta['doc_id']}.json"
+        out = out_dir / f"{meta['doc_id']}.json"
         if out.exists() and not args.force and not args.only:
             print(f"{meta['doc_id']}: уже извлечён, пропускаю (--force — заново)")
             continue
-        print(f"{meta['doc_id']} ({args.model})", flush=True)
-        result = extract_doc(path, catalog, args.model, use_cache=args.reuse_raw)
+        print(f"{meta['doc_id']} ({args.model}, {args.mode})", flush=True)
+        started = time.time()
+        if args.mode == "classify":
+            classifier = ClauseClassifier(catalog, DOC_TYPE_TERMS[meta["doc_type"]], DOC_TYPE_EVENTS[meta["doc_type"]],
+                                          args.model, RAW_DIR_LLM / "classify", use_cache=args.reuse_raw)
+            result, stats = classifier.classify_doc(path)
+            result["failed_chunks"] = stats.failed
+            print(f"  отброшено связей: {len(stats.dropped_edges)}, значений вне перечисления: {stats.invalid_values}")
+        else:
+            result = extract_doc(path, catalog, args.model, use_cache=args.reuse_raw)
+        result["seconds"] = round(time.time() - started, 1)
+        print(f"  время: {result['seconds']} с", flush=True)
         out.write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
         failed_total += result["failed_chunks"]
     if failed_total:

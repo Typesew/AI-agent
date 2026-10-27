@@ -72,7 +72,7 @@ def product_doc(p: dict) -> tuple[str, dict]:
             lines.append(f"{cid}. {clause['text']}")
             for n in clause.get("nodes", []) + ([clause["node"]] if "node" in clause else []):
                 nodes.append({"id": n["id"], "label": n["label"], "name": n["name"], "value": n.get("value", ""),
-                              "aliases": "", "section": cid})
+                              "aliases": "", "section": cid, **({"scope": "|".join(n["scope"])} if "scope" in n else {})})
                 if n["label"] == "Exception":
                     edges.append(["HAS_EXCEPTION", n["of"], n["id"], cid])
                     if "event" in n:

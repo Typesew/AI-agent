@@ -28,6 +28,8 @@ def get_agent() -> Agent:
 
 
 def show_response(data: dict):
+    if data.get("table"):  # вопрос-список: выводы по продуктам посчитал код, таблица — главное в ответе
+        st.dataframe(data["table"], hide_index=True, width="stretch")
     st.markdown(data["answer"])
     if data["sources"]:
         st.markdown("**Источники**\n" + "\n".join(f"- {s}" for s in data["sources"]))
@@ -48,8 +50,12 @@ def show_response(data: dict):
 
 
 def to_data(resp) -> dict:
+    table = None
+    if resp.table is not None:
+        table = [{"Продукт": r.product, resp.table.question_label: r.verdict, "Подробности": r.detail,
+                  "Пункт и редакция": r.cite()} for r in resp.table.rows]
     return {"answer": resp.answer, "sources": [s.render() for s in resp.sources], "tool_calls": resp.tool_calls,
-            "dot": resp.dot, "notes": resp.notes, "route": resp.route}
+            "dot": resp.dot, "notes": resp.notes, "route": resp.route, "table": table}
 
 
 st.title("🏦 Банковский переводчик")

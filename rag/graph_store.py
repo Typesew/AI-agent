@@ -37,13 +37,14 @@ Q_TRIGGERS = """
 MATCH (p:Product {id: $pid})-[:HAS_CONDITION|:CHARGES]->(n)<-[r:TRIGGERS]-(e:Event)
 OPTIONAL MATCH (n)-[:DEFINED_AS]->(t:Term)
 RETURN n.id, e.id, e.name, n.name, n.value, t.id, r.section"""
+Q_SCOPES = "MATCH (p:Product {id: $pid})-[:HAS_CONDITION]->(c:Condition) WHERE c.scope <> '' RETURN c.id, c.scope"
 Q_SOURCE = "MATCH (n)-[s:SOURCE]->(d:Document) WHERE n.id = $id RETURN d.file, s.section, d.date"
 Q_STATS = "MATCH (n) RETURN label(n), count(*)"
 
 # --- запросы на запись ---------------------------------------------------
 
 W_DOCUMENT = "CREATE (:Document {id: $id, title: $title, date: $date, file: $file})"
-W_NODE = "CREATE (:{label} {{id: $id, name: $name, value: $value, aliases: $aliases}})"
+W_NODE = "CREATE (:{label} {{id: $id, name: $name, value: $value, aliases: $aliases, scope: $scope}})"
 W_EDGE = "MATCH (a:{la} {{id: $a}}), (b:{lb} {{id: $b}}) CREATE (a)-[:{rel} {{section: $s}}]->(b)"
 W_SOURCE = "MATCH (n:{label} {{id: $n}}), (d:Document {{id: $d}}) CREATE (n)-[:SOURCE {{section: $s}}]->(d)"
 
@@ -79,7 +80,8 @@ class GraphStore:
         self.conn.execute(W_DOCUMENT, doc)
 
     def add_node(self, label: str, node: dict):
-        self.conn.execute(W_NODE.format(label=label), {k: node.get(k, "") for k in ("id", "name", "value", "aliases")})
+        self.conn.execute(W_NODE.format(label=label),
+                          {k: node.get(k, "") for k in ("id", "name", "value", "aliases", "scope")})
 
     def add_edge(self, rel: str, la: str, a: str, lb: str, b: str, section: str):
         self.conn.execute(W_EDGE.format(rel=rel, la=la, lb=lb), {"a": a, "b": b, "s": section})
@@ -108,6 +110,10 @@ class GraphStore:
 
     def triggers(self, pid: str):
         return self.rows(Q_TRIGGERS, {"pid": pid})
+
+    def condition_scopes(self, pid: str) -> dict[str, set[str]]:
+        """Условие -> события, на которые оно явно распространяется."""
+        return {cid: set(scope.split("|")) for cid, scope in self.rows(Q_SCOPES, {"pid": pid})}
 
     def sources(self, node_id: str):
         return self.rows(Q_SOURCE, {"id": node_id})

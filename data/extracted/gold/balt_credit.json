@@ -38,7 +38,8 @@
    "name": "Льготный период",
    "value": "до 100 дней на покупки, переводы и снятие наличных (без исключений)",
    "aliases": "",
-   "section": "2.1"
+   "section": "2.1",
+   "scope": "ev_cash|ev_transfer"
   },
   {
    "id": "balt_credit_cash_fee",

@@ -45,6 +45,15 @@ class UITest(unittest.TestCase):
         self.assertIn("19817.84", json.dumps([j.value for j in at.json]))
         at.session_state  # агент и MCP-подпроцесс остаются в кэше ресурса
 
+    def test_list_question_shows_table_first(self):
+        at = self.run_app("Какие кредитные карты сохраняют льготный период при снятии наличных?",
+                          lambda m, schema=None, **k: "Сохраняет «100 дней»; у «Опорная 55» — в пределах лимита.")
+        self.assertEqual(len(at.dataframe), 1)
+        table = at.dataframe[0].value
+        self.assertEqual(len(table), 5)
+        self.assertIn("Пункт и редакция", table.columns)
+        self.assertIn("balt_credit.md", " ".join(m.value for m in at.markdown))  # «Источники» по строкам таблицы
+
     def test_ollama_error_is_explained(self):
         def down(*a, **k):
             raise llm.LLMUnavailable("Ollama недоступен по http://localhost:11434")

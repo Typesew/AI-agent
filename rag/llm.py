@@ -8,6 +8,8 @@ import urllib.request
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
 EMBED_MODEL = os.environ.get("OLLAMA_EMBED_MODEL", "bge-m3")
+# Держать модель в памяти между вопросами: загрузка 8B с диска на CPU — десятки секунд.
+KEEP_ALIVE = os.environ.get("OLLAMA_KEEP_ALIVE", "30m")
 
 
 class LLMUnavailable(RuntimeError):
@@ -44,6 +46,7 @@ def chat(messages: list[dict], model: str = DEFAULT_MODEL, schema: dict | None =
         "messages": messages,
         "stream": False,
         "think": False,  # для Qwen3: без рассуждений быстрее и JSON чище
+        "keep_alive": KEEP_ALIVE,
         "options": {"temperature": 0, **({"num_predict": max_tokens} if max_tokens else {})},
     }
     if schema:

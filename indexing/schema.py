@@ -33,7 +33,10 @@ EXTRACTED_LABELS = ["Condition", "Fee", "Exception"]
 
 def ddl() -> list[str]:
     stmts = [
-        f"CREATE NODE TABLE {label}(id STRING, name STRING, value STRING, aliases STRING, PRIMARY KEY(id))"
+        # scope — на какие события явно распространяется условие («ev_cash|ev_transfer»):
+        # «льготный период до 100 дней на покупки, переводы и снятие наличных». Это свойство
+        # узла, а не связь, чтобы набор связей эталона (и метрики извлечения) не менялся.
+        f"CREATE NODE TABLE {label}(id STRING, name STRING, value STRING, aliases STRING, scope STRING, PRIMARY KEY(id))"
         for label in ENTITY_LABELS
     ]
     stmts.append("CREATE NODE TABLE Document(id STRING, title STRING, date STRING, file STRING, PRIMARY KEY(id))")

@@ -139,3 +139,45 @@ def collect_sources(used: list[str], items: dict, answer: str = "") -> list[Sour
         if any(f in kept for f in product_docs):
             return build(kept)
     return build(docs)
+
+
+# --- Режим «список»: таблицу выводов строит код (rag.verdicts), модель пишет только резюме ---
+
+LIST_MAX_TOKENS = 160
+LIST_SYSTEM = """Ты «Банковский переводчик». Ниже таблица, которую код составил по условиям продуктов.
+Напиши 1–3 предложения простым языком: какие продукты подходят, какие нет и главная оговорка.
+Используй только продукты и числа из таблицы, ничего не добавляй, не считай и не меняй выводы.
+Без заголовков, без списков, без ссылок."""
+NUMBER_RE = re.compile(r"\d[\d\s]*(?:[.,]\d+)?")
+
+
+def build_list_messages(question: str, verdicts) -> list[dict]:
+    return [{"role": "system", "content": LIST_SYSTEM},
+            {"role": "user", "content": f"Таблица:\n{verdicts.markdown()}\n\nВопрос: {question}"}]
+
+
+def summary_violations(summary: str, verdicts) -> list[str]:
+    """Продукты и числа в резюме модели, которых нет в таблице. Пустой список — резюме чистое."""
+    problems = []
+    in_table = {r.product_id for r in verdicts.rows}
+    for pid, aliases in _catalog_aliases().items():
+        if pid not in in_table and _mentioned(summary, aliases):
+            problems.append(f"продукт не из таблицы: {aliases[0].strip('=*')}")
+    table = re.sub(r"\s", "", verdicts.markdown())
+    for m in NUMBER_RE.findall(summary):
+        num = re.sub(r"\s", "", m).rstrip(".,")
+        if num and num not in table:
+            problems.append(f"число не из таблицы: {num}")
+    return problems
+
+
+def table_sources(verdicts) -> list[Source]:
+    """Блок «Источники» по строкам таблицы: один документ — одна строка, пункты склеены."""
+    docs: dict[str, dict] = {}
+    for r in verdicts.rows:
+        for s in r.sources:
+            d = docs.setdefault(s["file"], {"date": s["date"], "title": r.product, "clauses": []})
+            if s["section"] not in d["clauses"]:
+                d["clauses"].append(s["section"])
+    return [Source(f, ("пп. " if len(d["clauses"]) > 1 else "п. ") + ", ".join(d["clauses"]), d["date"], d["title"])
+            for f, d in docs.items()]

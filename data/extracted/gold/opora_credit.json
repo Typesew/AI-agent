@@ -46,7 +46,8 @@
    "name": "Льготный период",
    "value": "до 55 дней на покупки и на бесплатные переводы и снятие в пределах 50 000 ₽ в месяц",
    "aliases": "",
-   "section": "2.1"
+   "section": "2.1",
+   "scope": "ev_cash|ev_transfer"
   },
   {
    "id": "opora_credit_grace_x_over",

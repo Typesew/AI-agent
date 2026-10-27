@@ -19,6 +19,7 @@ from rag.entities import Entities
 
 CATALOG = Path(__file__).resolve().parent.parent / "data" / "catalog.json"
 TOOLS = ["loan_calculator", "grace_period_calc", "compare_products", "save_summary"]
+ROUTER_MAX_TOKENS = 120  # JSON маршрута — 40–80 токенов; лимит не даёт 8B на CPU «расписаться»
 
 SCHEMA = {
     "type": "object",
@@ -99,7 +100,7 @@ class Router:
     def ask_llm(self, question: str) -> dict:
         products = "; ".join(f"{p['name']} ({p['bank']})" for p in self.products.values())
         prompt = PROMPT.format(today=self.today.isoformat(), products=products, question=question)
-        raw = self.chat([{"role": "user", "content": prompt}], schema=SCHEMA)
+        raw = self.chat([{"role": "user", "content": prompt}], schema=SCHEMA, max_tokens=ROUTER_MAX_TOKENS)
         return json.loads(raw)
 
     def route(self, question: str, ent: Entities) -> Route:

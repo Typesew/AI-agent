@@ -20,6 +20,9 @@ NO_DATA_STEMS = ["вклад", "депозит", "ипотек", "автокре
 # Длина обычного ответа: «Плюсы / Минусы / Подводные камни / Итог» укладываются в ~400–600 токенов;
 # без лимита 8B на CPU (~5 ток/с) иногда пишет дольше нужного.
 ANSWER_MAX_TOKENS = 700
+# Фрагментов документов в контексте ответа: 3 вместо 5 — короче промпт, быстрее на CPU;
+# факты графа идут отдельно. Проверено офлайн-оценкой (20/20 с k=3).
+CONTEXT_CHUNKS = 3
 
 
 @dataclass
@@ -94,7 +97,8 @@ class Agent:
                 return AgentResponse(f"Не получилось посчитать: {e}", "clarify", tool_calls=[{**call, "error": str(e)}])
             calls.append(call)
 
-        ctx = (self.retriever.retrieve(question, ent, use_graph=use_graph) if route.route in ("rag", "both")
+        ctx = (self.retriever.retrieve(question, ent, use_graph=use_graph, k=CONTEXT_CHUNKS)
+               if route.route in ("rag", "both")
                else Context(ent))
         if route.route == "rag" and ctx.is_empty():
             return AgentResponse(NO_DATA, "nodata", context=ctx, notes=notes)

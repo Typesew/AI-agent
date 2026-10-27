@@ -20,3 +20,11 @@ kedr_student (qwen3:8b, classify)
   отброшено связей: 0, значений вне перечисления: 0
   время: 235.7 с
 opora_debit (qwen3:8b, classify)
+  opora_debit 1.1: condition/term_service_fee/ev_paid_service:triggers→1.1; condition/term_service_fee/ev_promo_end:triggers→1.1; condition/term_service_fee/ev_low_spend:triggers→1.1
+  opora_debit 1.2: none/-/-:none→1.2
+  opora_debit 2.1: condition/term_subscription/ev_paid_service:triggers→2.1; condition/term_cash_withdrawal/ev_cash:triggers→2.1; condition/term_cash_withdrawal/ev_transfer:triggers→2.1
+  opora_debit 3.1: condition/term_cashback/-:none→3.1; condition/term_cashback_limit/-:none→3.1
+  opora_debit 3.2: condition/term_cashback/ev_transfer:triggers→3.2; condition/term_cashback/ev_cash:triggers→3.2; condition/term_cashback/ev_cash:triggers→3.2
+  отброшено связей: 0, значений вне перечисления: 0
+  время: 195.3 с
+sever_install (qwen3:8b, classify)

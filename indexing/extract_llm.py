@@ -197,13 +197,15 @@ def main():
                         help="free — модель пишет узлы и связи сама; classify — выбирает из перечислений по пунктам")
     parser.add_argument("--only", nargs="*", help="doc_id одного или нескольких документов")
     parser.add_argument("--force", action="store_true", help="переизвлечь и уже готовые продукты")
+    parser.add_argument("--no-rules", action="store_true", help="classify: без правил кода поверх ответов модели")
+    parser.add_argument("--out", type=__import__("pathlib").Path, help="куда писать результат (по умолчанию по режиму)")
     parser.add_argument("--reuse-raw", action="store_true",
                         help="не звать модель, если сырой ответ раздела уже сохранён (пересчёт постобработки)")
     args = parser.parse_args()
     if not llm.available() and not args.reuse_raw:
         parser.error(f"Ollama недоступен по {llm.OLLAMA_URL}")
 
-    out_dir = CLASSIFY_OUT_DIR if args.mode == "classify" else OUT_DIR
+    out_dir = args.out or (CLASSIFY_OUT_DIR if args.mode == "classify" else OUT_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy(GOLD_DIR / "glossary.json", out_dir / "glossary.json")
     glossary = json.loads((GOLD_DIR / "glossary.json").read_text(encoding="utf-8"))
@@ -222,7 +224,8 @@ def main():
         started = time.time()
         if args.mode == "classify":
             classifier = ClauseClassifier(catalog, DOC_TYPE_TERMS[meta["doc_type"]], DOC_TYPE_EVENTS[meta["doc_type"]],
-                                          args.model, RAW_DIR_LLM / "classify", use_cache=args.reuse_raw)
+                                          args.model, RAW_DIR_LLM / "classify", use_cache=args.reuse_raw,
+                                          rules=not args.no_rules)
             result, stats = classifier.classify_doc(path)
             result["failed_chunks"] = stats.failed
             print(f"  отброшено связей: {len(stats.dropped_edges)}, значений вне перечисления: {stats.invalid_values}")

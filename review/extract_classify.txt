@@ -28,3 +28,11 @@ opora_debit (qwen3:8b, classify)
   отброшено связей: 0, значений вне перечисления: 0
   время: 195.3 с
 sever_install (qwen3:8b, classify)
+  sever_install 1.1: condition/term_installment/ev_missed_payment:triggers→1.1; condition/term_rate/ev_missed_two:cancels→1.1; condition/term_installment/ev_paid_service:triggers→1.1
+  sever_install 1.2: none/term_btn_installment/-:none→1.2
+  sever_install 2.1: fee/term_service_fee/-:none→2.1
+  sever_install 3.1: fee/term_fine/ev_missed_payment:triggers→3.1; fee/term_penalty/ev_missed_payment:triggers→3.1
+  sever_install 3.2: condition/term_rate/ev_missed_two:cancels→3.2; fee/term_rate/ev_missed_two:triggers→3.2; condition/term_early/ev_missed_two:triggers→3.2
+  отброшено связей: 0, значений вне перечисления: 0
+  время: 193.4 с
+всего секунд: 952

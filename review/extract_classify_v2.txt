@@ -1,0 +1,38 @@
+balt_credit (qwen3:8b, classify)
+  balt_credit 1.1: condition/term_credit_limit/-:none→1.1
+  balt_credit 1.2: condition/term_rate/-:none→1.2; condition/term_psk/-:none→1.2
+  balt_credit 1.3: condition/term_service_fee/-:none→1.3
+  balt_credit 2.1: condition/term_grace/-:none→2.1; fee/-/ev_cash:none→2.1; fee/-/ev_transfer:none→2.1
+  balt_credit 2.2: condition/term_grace/ev_not_full_repay:triggers→2.1; fee/term_rate/ev_not_full_repay:triggers→2.1
+  balt_credit 3.1: condition/term_cash_withdrawal/-:none→3.1; fee/-/-:none→3.1; condition/-/-:none→3.1
+  balt_credit 4.1: condition/term_cashback/-:none→4.1
+  balt_credit 5.1: condition/term_minpay/-:none→5.1; fee/term_penalty/ev_missed_payment:triggers→5.2; condition/term_minpay/-:none→5.1
+  balt_credit 5.2: condition/term_penalty/ev_missed_payment:triggers→5.2; fee/term_fine/ev_missed_payment:triggers→5.2; condition/term_grace/ev_missed_payment:cancels→5.2
+  отброшено связей: 0, значений вне перечисления: 0
+  время: 237.7 с
+kedr_student (qwen3:8b, classify)
+  kedr_student 1.1: condition/term_service_fee/-:none→1.1
+  kedr_student 2.1: condition/term_sbp/-:none→2.1
+  kedr_student 3.1: condition/term_cashback/-:none→3.1; condition/term_cashback_limit/-:none→3.1
+  kedr_student 3.2: condition/term_cashback/ev_low_spend:triggers→3.2; condition/term_promo/ev_low_spend:triggers→3.2
+  kedr_student 4.1: condition/term_student_card/ev_student_lost:cancels→4.1
+  kedr_student 4.2: condition/term_service_fee/ev_student_lost:cancels→4.2; condition/term_promo/ev_student_lost:cancels→4.2
+  отброшено связей: 0, значений вне перечисления: 0
+  время: 136.7 с
+opora_debit (qwen3:8b, classify)
+  opora_debit 1.1: condition/term_service_fee/-:none→1.1; fee/term_service_fee/-:none→1.1; exception/-/-:none→1.1
+  opora_debit 1.2: none/term_cash_withdrawal/-:none→1.2
+  opora_debit 2.1: condition/term_subscription/-:none→2.1
+  opora_debit 3.1: condition/term_cashback/-:none→3.1; condition/term_cashback_limit/-:none→3.1
+  opora_debit 3.2: exception/term_cashback/-:none→3.2; exception/term_cashback/-:none→3.2; exception/term_cashback/-:none→3.2
+  отброшено связей: 3, значений вне перечисления: 0
+  время: 141.5 с
+sever_install (qwen3:8b, classify)
+  sever_install 1.1: condition/term_installment/-:none→1.1
+  sever_install 1.2: condition/term_btn_installment/-:none→1.2
+  sever_install 2.1: fee/term_service_fee/-:none→2.1
+  sever_install 3.1: fee/term_fine/ev_missed_payment:triggers→3.1; fee/term_penalty/ev_missed_payment:triggers→3.1
+  sever_install 3.2: condition/term_rate/ev_missed_two:cancels→3.2; fee/term_rate/ev_missed_two:triggers→3.2; condition/term_early/ev_missed_two:triggers→3.2
+  отброшено связей: 0, значений вне перечисления: 0
+  время: 107.0 с
+всего секунд: 623

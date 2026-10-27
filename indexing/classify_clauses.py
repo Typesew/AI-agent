@@ -15,6 +15,7 @@
 - связи проверяются по indexing.schema, недопустимые отбрасываются и считаются.
 """
 
+import hashlib
 import json
 import re
 from dataclasses import dataclass, field
@@ -52,6 +53,23 @@ PROMPT = """Ты размечаешь пункт банковского дого
 
 Пункт {clause_id} (раздел «{section}»):
 {text}"""
+
+PROMPT_HASH = hashlib.sha256(PROMPT.encode()).hexdigest()[:8]
+
+# Проверенный и отвергнутый вариант (промпт v2, хеш 52d8dfb4): подсказки-ключевые слова
+# («обычно один элемент», «event — только если назван в пункте», «не начисляется на — exception»).
+# На выборке без правил кода он лучше (строгий F1 0,61 против 0,54), но вместе с правилами
+# хуже (0,63 против 0,66): модель сама отмечает исключения, но с неверным родительским
+# пунктом. См. review/eval_extraction_classify_v*.txt. Оставлен промпт v1.
+REJECTED_HINTS = """Подсказки:
+- обычно в пункте ОДИН элемент; второй и третий — только если в пункте несколько разных платежей
+  или условий («штраф … и неустойка …») либо отдельное последствие события;
+- event указывай, только если событие прямо названо в тексте этого пункта, иначе null;
+- «не начисляется на», «не распространяется на», «не входят» — это exception;
+- «отменяется», «прекращается», «больше нет» — cancels; «штраф», «неустойка», «начисляется … годовых»,
+  «переводится на» после события — triggers.
+
+"""
 
 
 def schema(term_ids: list[str], event_ids: list[str], clause_ids: list[str]) -> dict:
@@ -113,6 +131,53 @@ def exception_elements(text: str, events: dict[str, list[str]]) -> list[tuple[st
     if len(found) > 1:
         return [(events[e][0], e) for e in found]
     return [(text.strip(" ."), found[0] if found else None)]
+
+
+# «не начисляется на: …», «не распространяется на …», «… не входят» / «не входят в …».
+# Просто «не начисляются» (п. 3.1 «100 дней»: «проценты … не начисляются») — не исключение.
+EXCEPTION_CUE = re.compile(r"не\s+(?:распространя\w*|начисля\w*)\s+на\b|не\s+вход\w*(?:\s+в\b|\s*\.?\s*$)",
+                           re.IGNORECASE)
+
+
+def refine(clause_list: list[dict], answers: dict[str, list[dict]], events: dict[str, list[str]]) -> dict:
+    """Правила кода поверх ответов модели (слой отделён, чтобы мерить его вклад: --no-rules).
+
+    На выборке модель почти всегда заполняла все 3 элемента: придумывала события, которых
+    в пункте нет, дублировала условия и не узнавала перечни исключений. Правила:
+    1. событие засчитывается, только если оно названо в тексте пункта (алиасы справочника);
+    2. одинаковые (kind, term) внутри пункта схлопываются;
+    3. «не начисляется / не распространяется / не входят» — пункт-исключение: элементы
+       модели заменяются одним exception; родитель — ближайший предыдущий пункт с тем же
+       термином, что модель дала этим элементам, иначе ближайший предыдущий пункт-условие.
+    """
+    text = {c["id"]: c["text"] for c in clause_list}
+    order = [c["id"] for c in clause_list]
+    out: dict[str, list[dict]] = {}
+    for cid in order:
+        items = answers.get(cid)
+        if items is None:
+            continue
+        words = tokens(text[cid])
+        named = {e for e, phrases in events.items() if any(contains_all(p, words) for p in phrases)}
+        clean, seen = [], set()
+        for it in items:
+            it = dict(it)
+            if it["event"] and it["event"] not in named:
+                it["event"], it["event_relation"] = None, "none"
+            key = (it["kind"], it["term"], it["event"], it["event_relation"])
+            if key in seen or (it["kind"] == "none" and not it["event"]):
+                continue
+            seen.add(key)
+            clean.append(it)
+        if EXCEPTION_CUE.search(text[cid]) and not any(it["kind"] == "exception" for it in clean):
+            terms = {it["term"] for it in items if it["term"]}
+            earlier = order[:order.index(cid)][::-1]
+            parent = next((c for c in earlier if any(it["term"] in terms and it["kind"] == "condition"
+                                                     for it in out.get(c, []))), None)
+            parent = parent or next((c for c in earlier if any(it["kind"] == "condition" for it in out.get(c, []))), None)
+            clean = [{"kind": "exception", "term": None, "event": None, "event_relation": "none", "parent_clause": parent}]
+        out[cid] = clean
+    return out
 
 
 def build_graph(pid: str, clause_list: list[dict], answers: dict[str, list[dict]], catalog: dict,
@@ -188,9 +253,9 @@ def build_graph(pid: str, clause_list: list[dict], answers: dict[str, list[dict]
 
 class ClauseClassifier:
     def __init__(self, catalog: dict, term_ids: list[str], event_ids: list[str], model: str, raw_dir: Path,
-                 use_cache: bool = False):
+                 use_cache: bool = False, rules: bool = True):
         self.catalog, self.term_ids, self.event_ids = catalog, term_ids, event_ids
-        self.model, self.raw_dir, self.use_cache = model, raw_dir, use_cache
+        self.model, self.raw_dir, self.use_cache, self.rules = model, raw_dir, use_cache, rules
 
     def classify_doc(self, path: Path) -> tuple[dict, Stats]:
         meta, _ = parse_doc(path)
@@ -208,7 +273,8 @@ class ClauseClassifier:
         for c in clause_list:
             prompt = PROMPT.format(product=meta["product"], clause_list=listing, terms=terms, events=evs,
                                    clause_id=c["id"], section=c["section_title"], text=c["text"])
-            cache = self.raw_dir / f"{pid}_{c['id']}.{re.sub(r'[^a-z0-9]+', '_', self.model.lower())}.json"
+            # в имени — хеш шаблона промпта: ответы на разные версии промпта не смешиваются
+            cache = self.raw_dir / f"{pid}_{c['id']}.{re.sub(r'[^a-z0-9]+', '_', self.model.lower())}.{PROMPT_HASH}.json"
             try:
                 if self.use_cache and cache.exists():
                     raw = cache.read_text(encoding="utf-8")
@@ -230,5 +296,6 @@ class ClauseClassifier:
                 f"{it['kind']}/{it['term'] or '-'}/{it['event'] or '-'}:{it['event_relation']}"
                 f"{'→' + it['parent_clause'] if it['parent_clause'] else ''}" for it in answers[c['id']]), flush=True)
         events = {e: [p for p in self.catalog[e]["aliases"].split("|") if p] for e in self.event_ids}
-        graph = build_graph(pid, clause_list, answers, self.catalog, events, stats)
-        return {**graph, "stats": stats.as_dict(), "answers": answers}, stats
+        final = refine(clause_list, answers, events) if self.rules else answers
+        graph = build_graph(pid, clause_list, final, self.catalog, events, stats)
+        return {**graph, "stats": stats.as_dict(), "answers": answers, "refined": final, "rules": self.rules}, stats

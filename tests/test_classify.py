@@ -97,6 +97,12 @@ class ClassifyTest(unittest.TestCase):
         self.run_doc("kedr_student", answer, doc_type="student_card", use_cache=True)
         self.assertEqual(len(calls), n)  # второй раз модель не звали
 
+    def test_exception_cue_rule(self):
+        self.assertTrue(cc.EXCEPTION_CUE.search("Кэшбэк не начисляется на: переводы; снятие наличных."))
+        self.assertTrue(cc.EXCEPTION_CUE.search("Снятие наличных и переводы в льготный период не входят."))
+        # комиссия с оговоркой про проценты — не перечень исключений
+        self.assertFalse(cc.EXCEPTION_CUE.search("Снятие наличных — комиссия 3,9% + 390 ₽; проценты не начисляются."))
+
     def test_exception_elements(self):
         events = {e: [p for p in CATALOG[e]["aliases"].split("|") if p] for e in ("ev_cash", "ev_transfer")}
         listed = cc.exception_elements("Льготный период не распространяется на: снятие наличных; переводы с карты.", events)
